@@ -120,7 +120,7 @@ Finally, we compute downward simulation over explicit NTA by Algorithm \ref{alg:
 \section{Implementation}
 \label{sec:impl}
 
-As we mentioned in Section \ref{sec:VATA} VATA library already has infrastructure needed for implementation of
+As we mentioned in Section \ref{sec:vata} VATA library already has infrastructure needed for implementation of
 our method.
 It contains support for parsing input NTA, its semi-symbolic and explicit representation and implemented
 state-of-the-art algorithm for inclusion checking.
@@ -139,7 +139,6 @@ We exploited following classes from VATA implementation:
 \begin{itemize}
 	\item \emph{BDDTDTreeAutCore} Class for semi-symbolic representation of NTA using MTBDD.
 	\item \emph{ExplicitTreeAutCore} Class for explicit representation of NTA.
-	\item \emph{BDDTopDownSimComputer} Class computes downward simulation over explicit tree automata.
 	\item \emph{BinaryDiscontRelation} Class for representation of simulation relation.
 \end{itemize}
 
@@ -152,7 +151,17 @@ inclusion with our simulation is much faster
 \section{Conclusion}
 \label{sec:end}
 
-we are best because we find bug in vata
+This works describes implementation of a method for computing simulation over NFA and its implementation.
+Our method takes NTA represented in semi-symbolic top-down way using MTBDD, it
+turns it to explicit representation and compute downward simulation over it.
+
+We implemented our method as module to VATA library exploiting its infrastructure for manpilationg NTA.
+The method has been evaluated on set of NTA and it has shown that our method and found that it is very awsome.
+It 100000x faster then inclusion checking without simulation
+
+Further research may be more efficient manipulation with MTBDD during traslation to explicit representation or
+extending it to bottom-up automata.
+It is also possible to implement NFA reduction which uses computed simulation.
 
 \newpage
 \appendix
