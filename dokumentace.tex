@@ -1,0 +1,168 @@
+\documentclass[a4paper, 12pt]{article}
+\usepackage[left=1.5cm, text={18cm, 25cm}, top=2.5cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[czech]{babel}
+\usepackage{cite}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{url}
+\usepackage{comment}
+\usepackage[longend,ruled,vlined,commentsnumbered,linesnumbered,czech]{algorithm2e}
+\newcommand{\myuv}[1]{\quotedblbase #1\textquotedblleft}
+
+\title{Simulation of non-deterministic finite tree automata}
+\author{Martin Hruška, Petr Šebek\\\{xhrusk16, xsebek02\}@stud.fit.vutbr.cz}
+
+\date{}
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+\label{sec:intro}
+
+Non-deterministic finite tree automata (NTA) is formalism often used in the field of formal verification.
+For example, it can be used for shape analysis of programs manipulating complex data structure where
+state of heap is represented by a set of the tree automata [cite forester].
+The mentioned technqiue is based on the framework of abstract interpretation where one of fundamentals
+operations is computing fixpoint (mainly for the cycles in a program) what includes checking inclusion of
+tree automata languages.
+Checking inclusion is easy for deterministict tree automata (DTA) but much harder for NTA because
+naive algorithm has exponential compexity.
+However, one can make the algorithms for checking inclusion more efficient [cite antichains] by computing simulation relation over the states of checked automata.
+Please note, that it is not possbile to use DTA in these techniques because NTA can represent same language in much more
+conciser way and determinization could lead to exponental grow of the states.
+
+Being more general, simulation relation is attribute of graphs [cite Herzinger], not only automata.
+In case of tree automata it is possible to compute upward or downward simulation but in this
+work we consider only downward simulation.
+As we mentioned earlier simulation brings reduction of states which we need explore performing
+certain algorithms over tree automata because it often holds that when state $p$ is simulated by $q$
+we don't to further explore state $p$.
+Moreover, it is possible also to perform reduction of states of a NFA by computing
+equivalence classes on simulation relation and merging states in a same class.
+
+Another technique dealing with complexity of NFA is their representation using mutli-terminal binary decision diagrams (MTBDD).
+The symbols of a NFA are encoded to binary representation so the transitions can represented by shared MTBDD what is very efficient mainly for NFA with large alphabeth
+(in the second possible representation -- symbols are represented explicitly for each transition).
+A~NFA could be represented in bottom-up way or top-down way by MTBDD, in this work we consider only top-down way.
+
+In this work we would like to combine straightwordness of implementation of simulation over explicitly
+represented tree automata and conciser representation of automata by MTBDD.
+We suppose NTA represented by MTBDD and we will compute simulation by it conversion
+to explicit one with gradual reduction of number of the NFA symbols.
+We use computed simulation for more efficient inclusion computation and evaluate whether the method brings any advantage.
+The implementation is realized as an extension of VATA library which state-of-the-art library for NTA manipulation.
+
+In Section \ref{sec:analysis} we give formal definitions, in Section \ref{sec:bdd} MTBDD representation of automata is described.
+Section \ref{sec:bdd} describes VATA library, Section \ref{sec:vata} provides description of design of our solution.
+Implementation details take place in Section \ref{sec:impl} and finally experiments are evaluated in Section \ref{sec:exps}.
+\cite{autor:yes}
+
+\section{Preliminaries}
+\label{sec:analysis}
+In this section NTA and simulation over NTA states will be defined more formally.
+
+A~\emph{ranked alphabeth} is a finite set of symbols $\Sigma$ associated with a mapping $\#: \Sigma \rightarrow \mathbb{N_0}$
+that assigns ranks to symbols. A~\emph{tree} is a graph $t$ which is either empty or it has exactly one root and each of its
+nodes is the $i$-th successor of at most one node $v$ for some $i \in \mathbb{N_0}$
+
+A~\emph{finite, non-deterministic, top-down tree automata} is a quadratuple $A=(Q, \Sigma, \delta, R)$ where
+$Q$ is a finite set of \emph{states}, $R\subseteq Q$ is a set of \emph{root states}, $\Sigma$ is a ranked alphabeth,
+$\delta$ is a set of the transition rules.
+Each transition is a triple of the form $(q,a,q_1, \ldots, q_n)$ where $n \geq 0$, $q, q_0 \ldots q_n \in Q$, $a \in \Sigma$ and $\#(a) = n$.
+When $n = 0$ then such a transition is called a \emph{leaf rules}.
+A~\emph{bottom-up} automaton is a quadratuple $B=(Q, \Sigma, \delta, F)$, where $Q$, $F$ are same as for $top-down$ automaton, $F\subseteq Q$
+is a set of final states and $\delta$ is a transition relation with rules which are in the form $(q_1,\ldots, q_n,a,q)$ where $n \geq 0$ and $\#(a) = n$.
+We can interchange the two notations because non-deterministic automata are known to have same expressive power in bottom-up and top-down version. [cite somtheing]
+
+[TODO: maybe define semantics of TA]
+
+
+For a bottom-up NTA $A=(Q, \Sigma, \delta, R)$, a \emph{downward simulation} $\preceq\, \subseteq Q\times Q$ is binary relation such that $q \preceq p$
+and $(q,a,q_1,\ldots, q_n),a,q)$ then $\exists (p_1, \ldots, p_n) \rightarrow p \wedge \forall i \in {1 \ldots n}: q_i \preceq p_i$.
+
+\section{BDD representation}
+\label{sec:bdd}
+
+how the tree automata is represented
+
+\section{VATA}
+\label{sec:vata}
+VATA is library for efficient manipulation with NTA [cite VATA].
+It provides both encoding for NTA -- semi-symbolic via MTBDD and explicit.
+VATA is open-source licensed by GPL license and it is written in C++.
+It currently supports TIMBUK as input format.
+
+The main goal of VATA is to provide state-of-the-art algorithms for inclusion checking
+but it also contains implementation of standard operations like union or intersection.
+As we mentioned in Section \ref{sec:intro} inclusion checking is related to simulation
+since simulation relation could bring more efficiency to the state-of-the-art algorithms like [cite antichians].
+There are already implemented algorithms for computing simulation in VATA but not one of them uses
+method which we used.
+The algorithms for simulation computing in VATA uses encoding to LTL systems [cite tacas08] in case of explicit encoding
+and there are some implementations over MTBDD which are not known to work at all.
+
+\section{Design}
+\label{sec:design}
+
+This section describes conceptual design of our method for computing simulation and related algorithms.
+For implementation design please see Section \ref{sec:impl}.
+
+As the input of our method we take a NTA represented by MTBDD in top-down way.
+Then we translate it to a NTA represented explicitly and we also reduce symbols by following method:
+[TODO]
+Finally, we compute downward simulation over explicit NTA by Algorithm \ref{alg:sim}.
+
+\section{Implementation}
+\label{sec:impl}
+
+As we mentioned in Section \ref{sec:VATA} VATA library already has infrastructure needed for implementation of
+our method.
+It contains support for parsing input NTA, its semi-symbolic and explicit representation and implemented
+state-of-the-art algorithm for inclusion checking.
+So we decided to implement our solution as extension of VATA library.
+We design our implementation like a stand-alone module which is compiled seperately to the rest of library (using CMake building system exploited in VATA).
+Module needs just include some headers for knowing interface of VATA classes for NTA representation.
+
+When we focuse on implementation of our module itself we use following classes:
+\begin{itemize}
+	\item \emph{BDDTopDownSimExpl} Class translates MTBDD represented automaton to explicit one with symbol translation
+	\item \emph{BDDBDDTopDownSimComputer} Class computes downward simulation over explicit tree automata
+\end{itemize}
+
+We exploited following classes from VATA implementation:
+
+\begin{itemize}
+	\item \emph{BDDTDTreeAutCore} Class for semi-symbolic representation of NTA using MTBDD.
+	\item \emph{ExplicitTreeAutCore} Class for explicit representation of NTA.
+	\item \emph{BDDTopDownSimComputer} Class computes downward simulation over explicit tree automata.
+	\item \emph{BinaryDiscontRelation} Class for representation of simulation relation.
+\end{itemize}
+
+
+\section{Experiments}
+\label{sec:exps}
+
+inclusion with our simulation is much faster
+
+\section{Conclusion}
+\label{sec:end}
+
+we are best because we find bug in vata
+
+\newpage
+\appendix
+\section{User guide}
+\label{app:usage}
+
+for installation please read README
+for run, please read README-gal
+
+
+\bibliography{literatura}
+\bibliographystyle{czechiso}
+\end{document}
