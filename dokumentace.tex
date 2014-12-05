@@ -32,9 +32,14 @@ operations is computing fixpoint (mainly for the cycles in a program) what inclu
 tree automata languages.
 Checking inclusion is easy for deterministict tree automata (DTA) but much harder for NTA because
 naive algorithm has exponential compexity.
-However, one can make the algorithms for checking inclusion more efficient [cite antichains] by computing simulation relation over the states of checked automata.
-Please note, that it is not possbile to use DTA in these techniques because NTA can represent same language in much more
+It is not also possbile to use DTA in these techniques because NTA can represent same language in much more
 conciser way and determinization could lead to exponental grow of the states.
+However, one can make the algorithms for checking inclusion more efficient [cite antichains] by computing simulation relation over the states of checked automata.
+Simulation reduce state space which is neede to explore to check whether inclusion holds.
+On the other side, computation of simulation relation has itself quadratic complexity so the time needed
+to compute it is sometimes bigger then saved state space.
+This leads to need of trying the new methods for computing simulation which can be more efficient and
+reduce its complexity to level when it will be efficient enough to be used always for enhancing inclusion checking. 
 
 Being more general, simulation relation is attribute of graphs [cite Herzinger], not only automata.
 In case of tree automata it is possible to compute upward or downward simulation but in this
@@ -93,8 +98,8 @@ how the tree automata is represented
 \section{VATA}
 \label{sec:vata}
 VATA is library for efficient manipulation with NTA [cite VATA].
-It provides both encoding for NTA -- semi-symbolic via MTBDD and explicit.
-VATA is open-source licensed by GPL license and it is written in C++.
+It provides both encoding for NTA -- semi-symbolic via MTBDD and explicit which will described further.
+VATA is open-source licensed under GPL license and it is written in C++.
 It currently supports TIMBUK as input format.
 
 The main goal of VATA is to provide state-of-the-art algorithms for inclusion checking
@@ -105,6 +110,24 @@ There are already implemented algorithms for computing simulation in VATA but no
 method which we used.
 The algorithms for simulation computing in VATA uses encoding to LTL systems [cite tacas08] in case of explicit encoding
 and there are some implementations over MTBDD which are not known to work at all.
+
+\subsection{Explicit representation}
+
+The explcitly represented automaton is represented by it transition set using two hash maps.
+The first one maps each state $q$ to the second hash map which maps symbol $a$ set of tuples $(q_1,\ldots,q_n)$ for all $a(q_1, \ldots, q_n) \rightarrow q \in \delta$.
+The set of states is not stored explictly because it is possible to obtain it from transition relation.
+However, a set of final states is represented like a standard set.
+
+\subsection{Semi-Symbolic Representation}
+
+Semi-symbolic reprentation is based on representing transition relation using MTBDD.
+The particular details of encoding of a NTA to MTBDD is described in section \ref{sec:bdd}.
+The VATA library provides two possible MTBDD representation -- top-down and bottomu-up.
+The first one stores MTBDD for each $q \in Q$ and all transition where $q$ is on right-handed side
+are represented by the MTBDD.
+The MTBDD terminal symbols has are sets of tuples which it is possible to make transition from $q$ to.
+The bottom-up representation inversely, MTBDD exists for each tuple of the NTA and MTBBD represents all transitions with
+the tuple on left-handed side and the terminal symbols are sets of states which it is possible to make transition to.
 
 \section{Design}
 \label{sec:design}
@@ -183,14 +206,25 @@ We exploited following classes from VATA implementation:
 	\item \emph{BinaryDiscontRelation} Class for representation of simulation relation.
 \end{itemize}
 
-\subsection{ExplicitRepresentation}
-
-\subsection{Semi-Symbolic Representation}
-
 \section{Experiments}
 \label{sec:exps}
 
-inclusion with our simulation is much faster
+The experiments should find out how big efficien brings our method for computing simulation for checking inclusion of the tree automata.
+The experiments was done by checking inclusion of language each automaton to other automata with and without simulation
+and comparing needed times for checking inclusion depending on the number of states of the automata.
+The for computing simulation was included into the time needed for checking inclusion with simulation
+because it is not often possible to reuse once computed simulation.
+
+We evalued our method on the set of [TODO: Number] automata.
+The automata had from [TODO: number] to [TODO: Number] states.
+The experiments was done computer with [TODO: configuration]
+
+As you can see on Figure \ref{fig:res} the advantage of usage simulation is not still dominant.
+Checking of language inclusion is faster only sometimes when the simulation is used.
+We suppose that it is in cases when state explosion occured and checking without simulation
+should go through whole state space.
+This shows that symbol reduction and related transition reduction does not bring so big advatange
+to equalize time neede to compute simulation.
 
 \section{Conclusion}
 \label{sec:end}
