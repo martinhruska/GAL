@@ -10,7 +10,7 @@
 \usepackage{tikz}
 \usepackage{url}
 \usepackage{comment}
-\usepackage[longend,ruled,vlined,commentsnumbered,linesnumbered,czech]{algorithm2e}
+\usepackage[longend,ruled,vlined,commentsnumbered,linesnumbered]{algorithm2e}
 \newcommand{\myuv}[1]{\quotedblbase #1\textquotedblleft}
 
 \title{Simulation of non-deterministic finite tree automata}
@@ -112,8 +112,49 @@ and there are some implementations over MTBDD which are not known to work at all
 This section describes conceptual design of our method for computing simulation and related algorithms.
 For implementation design please see Section \ref{sec:impl}.
 
-As the input of our method we take a NTA represented by MTBDD in top-down way.
-Then we translate it to a NTA represented explicitly and we also reduce symbols by following method:
+As the input of our method we take a NTA represented by MTBDD in top-down way
+which we translate into a NTA represented explicitly and we also reduce symbols.
+This done by following general method doing reduction of alphabeth and yielding a new NTA.
+Let have a NFA $A=(Q, \Sigma, \delta, F)$, a new ranking alphabeth $\Sigma'$ and mapping $f: 2^\Sigma \rightarrow \Sigma'$,
+when there is $((a_1(q_1,\ldots,q_n) \rightarrow q) \in \delta \wedge \ldots \wedge (a_n(q_1,\ldots,q_n) \rightarrow q) \in \delta) \wedge
+((a_1(r_1,\ldots,r_n) \rightarrow q) \in \delta \wedge \ldots \wedge (a_n(r_1,\ldots,r_n) \rightarrow q) \in \delta)$
+such that $a_i \neq a_{i+1}$ for any $i\in \{1..n\}$ then $(\{a_1, \ldots, a_n\}) \rightarrow A) \in f$.
+It is also constructed a new NFA $A' = (Q, \Sigma', \delta', F)$ where $Q, F$ are unchanged to $A$ 
+and $\Sigma'$ is the new ranked alphabeth obtained by mapping $f$ and $\delta'$ is transition rules set such that
+$(a_1(q_1, \ldots, q_n) \rightarrow q) \in \delta \wedge \ldots \wedge (a_n(q_1, \ldots, q_n) \rightarrow q) \in \delta$ and
+$ \{a_1,\ldots,a_n\}  \rightarrow A~\in f$ for some $A \in \Sigma'$, then $A(q_1, \ldots, q_n) \rightarrow q) \in \delta$
+for all possible tuples $q_1,\ldots,q_n$ [TODO which tuples].
+In our case, the input NFA is semi-symbolic represented one and the output NTA is the same automata in explicit representation.
+The change of NTA representation is done in level of implementation details and is not directly related to a design of generic algorithm.
+The whole method of translation is described again in Algortihm \ref{alg:translate} to provide more easy to follow way of method description.
+
+\begin{algorithm}
+\label{alg:translate}
+\KwIn{NTA $A=(Q,\Sigma, \delta, F)$}
+    \KwOut{NTA $A'=(Q,\Sigma', \delta', F)$}
+    $\delta' = \emptyset $\;
+    $\Sigma' = \emptyset $\;
+	$f = \emptyset$\;
+	\ForEach{$q \in Q$}
+    {
+		\ForEach{$(q_1,\ldots, q_n)$, such that $(a(q_1, \ldots, q_n)\rightarrow q) \in \delta)$ for any $a\in \Sigma$}
+		{
+			$S_q = \{ a\in \Sigma \,|\, \exists(a(q_1,\ldots,q_n) \rightarrow q) \in \delta\}$\;
+			\ForEach{$(r_1,\ldots, r_n)$, such that $(b(r_1, \ldots, r_n)\rightarrow q) \in \delta)$ for any $a\in \Sigma$}
+			{
+				$S_r = \{a\in \Sigma \,|\, \exists\, (a(r_1,\ldots,r_n) \rightarrow q) \in \delta\}$\;
+				\If{$(S_q \cap S_r \rightarrow A') \not\in f$ for any $A' \in \Sigma'$}
+				{
+					add $A'$ to $\Sigma'$ such that $A' \not\in \Sigma'$\;
+					add $(S_q \cap S_r \rightarrow A')$ to $f$\;
+				}
+				add $f(S_q \cap S_r)(q_1,\ldots,) \rightarrow q$ to $\delta'$\;
+			}
+		}
+    }
+\caption{NTA symbol reduction yielding a new NTA}
+\end{algorithm}
+
 [TODO]
 Finally, we compute downward simulation over explicit NTA by Algorithm \ref{alg:sim}.
 
@@ -142,6 +183,9 @@ We exploited following classes from VATA implementation:
 	\item \emph{BinaryDiscontRelation} Class for representation of simulation relation.
 \end{itemize}
 
+\subsection{ExplicitRepresentation}
+
+\subsection{Semi-Symbolic Representation}
 
 \section{Experiments}
 \label{sec:exps}
