@@ -248,22 +248,47 @@ We exploited following classes from VATA implementation:
 \section{Experiments}
 \label{sec:exps}
 
-The experiments should find out how big efficien brings our method for computing simulation for checking inclusion of the tree automata.
+The experiments should find out how big efficient brings our method for computing simulation for checking inclusion of the tree automata.
 The experiments was done by checking inclusion of language each automaton to other automata with and without simulation
 and comparing needed times for checking inclusion depending on the number of states of the automata.
 The for computing simulation was included into the time needed for checking inclusion with simulation
 because it is not often possible to reuse once computed simulation.
 
-We evalued our method on the set of [TODO: Number] automata.
-The automata had from [TODO: number] to [TODO: Number] states.
-The experiments was done computer with [TODO: configuration]
+We ran experiments on automata from VATA test folder. First we ran experiment with automata with number of states from range O - 60. You can see result of this experiment in figure~\ref{fig:g}. Please note that y axis is in logarithmic scale. Also plots are sorted by nosim\_time, without simulation. Our experiments had timeout 60 seconds. We checked if result of inclusion with simulation correspond with result of run without simulation. We have 100 \% success rate in computing inclusion result, therefore our simulation algorithm is implemented correctly.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics{g}
+	\caption{}
+	\label{fig:g}
+\end{figure}
+
+You can see that variant without simulation runs faster for most of the runs. It is because simulation is demanding per se and only prolong computation time of easily computed inclusions. Easily computed inclusions are those where we can refute inclusion right from start. On the other hand there is a region, where computation with simulation runs considerably slower than without simulation. You can see this region of previous plot in figure~\ref{fig:g_detail}.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics{g_detail}
+	\caption{}
+	\label{fig:g_detail}
+\end{figure}
+
+In this region we reduce some states and simulation runs comparably with previously described problems. This region is what we focus on and is main contribution of this work. For autotama with ~50 states this can run for ~4 minutes (in environment with disabled timeout) and gets worse with rising number of states. We are able to keep time of computation at ~1 second, for most cases. As you can see our run is terminated at timeout in some cases too, but in much lower number.
+
+In next experiment we took automata with 110 - 170 states. You can see results of this experiment in figure \ref{fig:g_advanced}. Again you can see that for half cases computation without simulation is faster, but for second half our method  prevails. It still computes its results in 1 second while nosim run is cut off after 60 seconds.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics{g_advanced}
+	\caption{}
+	\label{fig:g_advanced}
+\end{figure}
 
 As you can see on Figure \ref{fig:res} the advantage of usage simulation is not still dominant.
 Checking of language inclusion is faster only sometimes when the simulation is used.
 We suppose that it is in cases when state explosion occured and checking without simulation
 should go through whole state space.
-This shows that symbol reduction and related transition reduction does not bring so big advatange
-to equalize time neede to compute simulation.
+This shows that symbol reduction and related transition reduction does not bring so big advantage
+to equalize time needed to compute simulation.
 
 \section{Conclusion}
 \label{sec:end}
