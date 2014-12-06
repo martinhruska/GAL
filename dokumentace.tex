@@ -12,6 +12,8 @@
 \usepackage{comment}
 \usepackage[longend,ruled,vlined,commentsnumbered,linesnumbered]{algorithm2e}
 \newcommand{\myuv}[1]{\quotedblbase #1\textquotedblleft}
+\let\oldnl\nl% Store \nl in \oldnl
+\newcommand{\nonl}{\renewcommand{\nl}{\let\nl\oldnl}}% Remove line number for one line
 
 \title{Simulation of non-deterministic finite tree automata}
 \author{Martin Hruška, Petr Šebek\\\{xhrusk16, xsebek02\}@stud.fit.vutbr.cz}
@@ -173,17 +175,17 @@ The whole method of translation is described again in Algortihm \ref{alg:transla
 \label{alg:translate}
 \KwIn{NTA $A=(Q,\Sigma, \delta, F)$}
     \KwOut{NTA $A'=(Q,\Sigma', \delta', F)$}
-    $\delta' = \emptyset $\;
-    $\Sigma' = \emptyset $\;
-	$f = \emptyset$\;
+    $\delta' := \emptyset $\;
+    $\Sigma' "= \emptyset $\;
+	$f := \emptyset$\;
 	\ForEach{$q \in Q$}
     {
 		\ForEach{$(q_1,\ldots, q_n)$, such that $(a(q_1, \ldots, q_n)\rightarrow q) \in \delta)$ for any $a\in \Sigma$}
 		{
-			$S_q = \{ a\in \Sigma \,|\, \exists(a(q_1,\ldots,q_n) \rightarrow q) \in \delta\}$\;
+			$S_q := \{ a\in \Sigma \,|\, \exists(a(q_1,\ldots,q_n) \rightarrow q) \in \delta\}$\;
 			\ForEach{$(r_1,\ldots, r_n)$, such that $(b(r_1, \ldots, r_n)\rightarrow q) \in \delta)$ for any $a\in \Sigma$}
 			{
-				$S_r = \{a\in \Sigma \,|\, \exists\, (a(r_1,\ldots,r_n) \rightarrow q) \in \delta\}$\;
+				$S_r := \{a\in \Sigma \,|\, \exists\, (a(r_1,\ldots,r_n) \rightarrow q) \in \delta\}$\;
 				\If{$(S_q \cap S_r \rightarrow A') \not\in f$ for any $A' \in \Sigma'$}
 				{
 					add $A'$ to $\Sigma'$ such that $A' \not\in \Sigma'$\;
@@ -193,11 +195,64 @@ The whole method of translation is described again in Algortihm \ref{alg:transla
 			}
 		}
     }
+	\Return $A' = (Q, \Sigma', \delta', F)$
 \caption{NTA symbol reduction yielding a new NTA}
 \end{algorithm}
 
-[TODO]
 Finally, we compute downward simulation over explicit NTA by Algorithm \ref{alg:sim}.
+\begin{algorithm}
+\label{alg:sim}
+\KwIn{NTA $A=(Q,\Sigma, \delta, F)$}
+	\KwOut{$\preceq \subseteq Q \times Q$}
+	\SetKwFunction{main}{main}
+	\SetKwProg{main}{}{}{}
+    
+	$last := \emptyset $\;
+    $sim := \emptyset $\;
+	\While{$sim \neq last$}
+	{
+		$last := sim$\;
+		\ForEach{Arity $n$ of $\Sigma$}
+		{
+			\ForEach{$a \in \Sigma$ such that $\#(a) = n$}
+			{
+				\ForEach{$(q_1,\ldots, q_n)$, such that $(a(q_1, \ldots, q_n)\rightarrow q) \in \delta)$ for any $q \in Q$}
+				{
+					$temp := \emptyset$\;
+					\ForEach{$(r_1,\ldots, r_n)$, such that $(a(r_1, \ldots, r_n)\rightarrow r) \in \delta)$ for any $r \in Q$ and 
+					$q_1 \preceq r_1 \wedge \ldots \wedge q_n \preceq r_n$}
+					{
+						$temp := temp \cup \{r \in Q \,|\, a(r_1,\ldots, r_n) \rightarrow r\}$\;
+					}
+
+					$simRefiment(sim, \{q \in Q \,|\, a(q_1,\ldots, q_n) \rightarrow q\}, temp)$\;
+				}
+			}
+		}
+
+	}
+	\Return $sim$\;
+	\DontPrintSemicolon \nonl\;
+	\setcounter{AlgoLine}{0}
+
+	\SetKwFunction{simRefiment}{simRefiment}
+	\SetKwProg{refProc}{Function}{}{}
+	\nonl \refProc{\simRefiment{$sim$,$lhs$,$rhs$}}
+	{
+		\ForEach{$q \in lhs$}
+		{
+			\ForEach{$(q,r) \in sims$}
+			{
+				\If{$r \notin rhs$}
+				{
+					remove $(q,r)$ from $sim$ \;
+				}
+			}
+		}
+	 }
+\caption{Computing simulation on a NTA TODO cite ondra}
+\end{algorithm}
+
 
 \section{Implementation}
 \label{sec:impl}
