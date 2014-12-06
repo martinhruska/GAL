@@ -224,7 +224,25 @@ The whole method of translation is described again in Algortihm \ref{alg:transla
 \caption{NTA symbol reduction yielding a new NTA}
 \end{algorithm}
 
-Finally, we compute downward simulation over explicit NTA by Algorithm \ref{alg:sim}.
+\begin{theorem}
+Let have a NFA $A = (Q, \Sigma, \delta, F)$ and let $n = |Q|$, $m = |\delta|$.
+Complexity of Algorithm \ref{alg:translate} is $O(3) + O(m)*(O(u)+O(m)*O(v)) = O(m*u + m^2+v)$
+where $u,v$ are parameters dependent on specific implementation of tha data structures used in the algorithm.
+\end{theorem}
+
+\begin{proof}
+	Initialization at lines $1-3$ has constant complexity $O(3)$.
+	Cycles at lines $4,5$ are repetead together repeated at most $O(m)$ times because for each state $q\in Q$ are
+	visited all transitions where $q$ is at right-handed side  and all states are iterated by cycle at line $4$.
+	Complexity of operation at line $6$ is dependent at representation so we will represented by parameter $u$.
+	Cycle at line $7$ is repeated at most $O(m)$ (because there are no more transitions).
+	The line $8-12$ are again strongly dependent on representation of automata or implementation so
+	we will use parameter $v$ to express complexity of this five lines.
+	Putting all together we have following complexity: $O(3) + O(m)*(O(u)+O(m)*O(v)) = O(m*u + m^2+v)$
+
+\end{proof}
+
+Finally, we compute downward simulation over explicit NTA by Algorithm \ref{alg:sim} which is based on the same algortihm from \cite{lengal:trees}.
 \begin{algorithm}[h]
 \label{alg:sim}
 \KwIn{NTA $A=(Q,\Sigma, \delta, F)$}
