@@ -224,24 +224,7 @@ The whole method of translation is described again in Algortihm \ref{alg:transla
 \caption{NTA symbol reduction yielding a new NTA}
 \end{algorithm}
 
-\begin{theorem}
-Let have a NFA $A = (Q, \Sigma, \delta, F)$ and $n = |Q|$, $m = |\delta|$ and let also ignore implementation
-complexity of the used data structures.
-Complexity of Algorithm \ref{alg:translate} is $O(m^2)$.
-\end{theorem}
-
-\begin{proof}
-	Initialization at lines $1-3$ has constant complexity $O(3)$.
-	Cycles at lines $4,5$ are repetead together repeated at most $O(m)$ times because for each state $q\in Q$ are
-	visited all transitions where $q$ is at right-handed side  and all states are iterated by cycle at line $4$.
-	Complexity of operation at line $6$ is $O(1)$.
-	Cycle at line $7$ is repeated at most $O(m)$ (because there are no more transitions).
-	The line $8-12$ are $O(5)$ ignoring specific implementation.
-	Putting all together we have following complexity: $O(3) + O(m)*(O(u)+O(m)*O(v)) = O(m*u + m^2+v)$
-
-\end{proof}
-
-Finally, we compute downward simulation over explicit NTA by Algorithm \ref{alg:sim} which is based on the same algortihm from \cite{lengal:trees}.
+Finally, we compute downward simulation over explicit NTA by Algorithm \ref{alg:sim}.
 \begin{algorithm}[h]
 \label{alg:sim}
 \KwIn{NTA $A=(Q,\Sigma, \delta, F)$}
@@ -296,8 +279,7 @@ Finally, we compute downward simulation over explicit NTA by Algorithm \ref{alg:
 \end{algorithm}
 
 \begin{theorem}
-Let have a NFA $A = (Q, \Sigma, \delta, F)$ and $n = |Q|$, $m = |\delta|$ and let also ignore implementation
-complexity of the used data structures.
+Let have a NFA $A = (Q, \Sigma, \delta, F)$ and let $n = |Q|$, $m = |\delta|$.
 Complexity of Algorithm \ref{alg:sim} is $O(m^2*n^4)$
 \end{theorem}
 
@@ -319,11 +301,6 @@ Complexity of Algorithm \ref{alg:sim} is $O(m^2*n^4)$
 	O(n^2)*(O(m^2*n^2)) =
 	O(m^2*n^4)$
 \end{proof}
-
-The whole complexity of our method is $O(m^2)+O(m^2*n^4)$. As you mentiond we ignore complexity of
-manipulation of the used data structures.
-We know that this could changed the complexity of the algorithms in practice but real implementation can significantly differ
-and we would like to show complexity related to the number of the states and size of transition relation in more abstract way.
 
 \section{Implementation}
 \label{sec:impl}
@@ -412,10 +389,53 @@ It is also possible to implement NFA reduction which uses computed simulation.
 \section{User guide}
 \label{app:usage}
 
-for installation please read README
-for run, please read README-gal
+You can compile library if you satisfy prerequisites defined in file \textit{README} in project root folder. Compilation command is
+\begin{verbatim}
+$ make release
+\end{verbatim}
 
+When you have VATA compiled you can run simulation on file with command:
+\begin{verbatim}
+$ build/cli/vata -r bdd-td -o bdd=spec sim <AUTOMATON>
+\end{verbatim}
+This will run our code and will output simulation matrix. Simulation matrix $A$ where row index and column index are states. If value $A_{i,j}$ equals 1 it means that $i$ can be simulated by $j$, if 0 it means that $i$ cannot be simulated by $j$.
 
+Automata for try-out are located in folder \texttt{automata/} or \texttt{tests/}.
+
+If you want to run explicit simulation use command
+\begin{verbatim}
+$ build/cli/vata -r expl sim <AUTOMATON>
+\end{verbatim}
+Output is same as with run with our simulation.
+
+You can compare these two results with python script
+\begin{verbatim}
+$ src/gal/compare_simulations.py <CORRECT_SIMULATION> <TEST_SIMULATION>
+\end{verbatim}
+
+To run inclusion with our simulation launch command
+\begin{verbatim}
+$ build/cli/vata -r bdd-td incl -t -o dir=down,rec=yes,sim=yes,bdd=spec <A1> <A2>
+\end{verbatim}
+
+If you want to run inclusion without our simulation run
+\begin{verbatim}
+$ build/cli/vata -r bdd-td incl -t -o dir=down,rec=yes <A1> <A2>
+\end{verbatim}
+
+For convenience we wrote two scripts that run previous two commands with timeout
+\begin{verbatim}
+$ src/gal/run_incl_nosim.sh <A1> <A2> 
+$ src/gal/run_incl_sim.sh <A1> <A2>
+\end{verbatim}
+
+Script which will tests all given automata for inclusion in product
+\begin{verbatim}
+$ src/gal/test_inclusion.py <A1> [ <A2> [...]]
+\end{verbatim}
+
+\newpage
+ 
 \bibliography{literatura}
 \bibliographystyle{plain}
 \end{document}
