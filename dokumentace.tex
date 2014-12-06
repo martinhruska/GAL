@@ -43,7 +43,7 @@ conciser way and determinization could lead to exponential grow of the  number o
 However, there are efficient algorithms for checking language inclusion (based on antichains introduced in \cite{tacas10})
 with which it is possible to make more efficient by computing simulation relation over the states of checked automata \cite{tacas10}.
 Simulation reduce state space which is needed to explore to check whether inclusion holds.
-On the other side, computation of simulation relation has itself cubic complexity so the time needed
+On the other side, computation of simulation relation has itself $O(m^2*n^4)$ complexity so the time needed
 to compute it is sometimes bigger than saved state space.
 This leads to need of trying the new methods for computing simulation which can be more efficient and
 reduce its complexity to level when it will be efficient enough to be used always for enhancing inclusion checking. 
