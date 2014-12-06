@@ -11,9 +11,13 @@
 \usepackage{url}
 \usepackage{comment}
 \usepackage[longend,ruled,vlined,commentsnumbered,linesnumbered]{algorithm2e}
+\usepackage{amsthm}
+
 \newcommand{\myuv}[1]{\quotedblbase #1\textquotedblleft}
 \let\oldnl\nl% Store \nl in \oldnl
 \newcommand{\nonl}{\renewcommand{\nl}{\let\nl\oldnl}}% Remove line number for one line
+
+\newtheorem{theorem}{Theorem}
 
 \title{Simulation of non-deterministic finite tree automata}
 \author{Martin Hruška, Petr Šebek\\\{xhrusk16, xsebek02\}@stud.fit.vutbr.cz}
@@ -271,9 +275,32 @@ Finally, we compute downward simulation over explicit NTA by Algorithm \ref{alg:
 			}
 		}
 	 }
-\caption{Computing simulation on a NTA TODO cite ondra}
+	 \caption{Computing simulation on a NTA. The algorithm is based on the one in \cite{lengal:trees}}
 \end{algorithm}
 
+\begin{theorem}
+Let have a NFA $A = (Q, \Sigma, \delta, F)$ and let $n = |Q|$, $m = |\delta|$.
+Complexity of Algorithm \ref{alg:sim} is $O(m^2*n^4)$
+\end{theorem}
+
+\begin{proof}
+	The lines $1-2$ in main of Algorithm \ref{alg:sim} takes constant time $O(2)$.
+	Cycle beginning at line $3$ will be repeated at most $n^2$ because $sim$ has size $n^2$ at the begging of the Algorithm
+	and each item could be removed at one iteration at the worst case.
+	The cycles at lines $5-7$ takes complexity $O(m)$ since we iterate over all arities over all symbols and over all transition
+	with a symbol of a arity it takes together that we iterate over all transitions.
+	Line $8$ takes again constant time $O(1)$.
+	Cycle at line $9$ has complexity $O(m)$ because in the worst case all symbols there is only one symbol with one arity.
+	so this cycle will iterate over all transitions again.
+	Complexity of line $10$ is constant $O(1)$.
+	Function $simRefiment$ has complexity $O(n^2)$ because it could iterate over each element of $sim$ what could be $O(n^2)$.
+	Removing items from $sim$ at line $4$ have constant complexity so it does not change anything at all.
+	Taking all together, Algorithm \ref{alg:sim} has following complexity 
+	$O(2) + O(n^2)*(O(m)*(1+O(m)+O(n^2)))=
+	O(2) + O(n^2)*(O(m)+O(m^2)+O(m^2*n^2)) =
+	O(n^2)*(O(m^2*n^2)) =
+	O(m^2*n^4)$
+\end{proof}
 
 \section{Implementation}
 \label{sec:impl}
