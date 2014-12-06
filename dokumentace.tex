@@ -1,7 +1,7 @@
 \documentclass[a4paper, 12pt]{article}
 \usepackage[left=1.5cm, text={18cm, 25cm}, top=2.5cm]{geometry}
 \usepackage[utf8]{inputenc}
-\usepackage[czech]{babel}
+\usepackage[czech,english]{babel}
 \usepackage{cite}
 \usepackage{graphicx}
 \usepackage{float}
@@ -26,7 +26,7 @@
 
 Non-deterministic finite tree automata (NTA) is formalism often used in the field of formal verification.
 For example, it can be used for shape analysis of programs manipulating complex data structure where
-state of heap is represented by a set of the tree automata [cite forester].
+state of heap is represented by a set of the tree automata \cite{methods12}.
 The mentioned technqiue is based on the framework of abstract interpretation where one of fundamentals
 operations is computing fixpoint (mainly for the cycles in a program) what includes checking inclusion of
 tree automata languages.
@@ -34,14 +34,15 @@ Checking inclusion is easy for deterministict tree automata (DTA) but much harde
 naive algorithm has exponential compexity.
 It is not also possbile to use DTA in these techniques because NTA can represent same language in much more
 conciser way and determinization could lead to exponental grow of the states.
-However, one can make the algorithms for checking inclusion more efficient [cite antichains] by computing simulation relation over the states of checked automata.
+However, there are efficient algorithms for checking language inclusion (based on antichains introduced in \cite{tacas10})
+which it is possible to make more efficient by computing simulation relation over the states of checked automata \cite{tacas10}.
 Simulation reduce state space which is neede to explore to check whether inclusion holds.
 On the other side, computation of simulation relation has itself quadratic complexity so the time needed
 to compute it is sometimes bigger then saved state space.
 This leads to need of trying the new methods for computing simulation which can be more efficient and
 reduce its complexity to level when it will be efficient enough to be used always for enhancing inclusion checking. 
 
-Being more general, simulation relation is attribute of graphs [cite Herzinger], not only automata.
+Being more general, simulation relation is attribute of graphs not only automata \cite{focs95, tacas08}.
 In case of tree automata it is possible to compute upward or downward simulation but in this
 work we consider only downward simulation.
 As we mentioned earlier simulation brings reduction of states which we need explore performing
@@ -65,7 +66,6 @@ The implementation is realized as an extension of VATA library which state-of-th
 In Section \ref{sec:analysis} we give formal definitions, in Section \ref{sec:bdd} MTBDD representation of automata is described.
 Section \ref{sec:bdd} describes VATA library, Section \ref{sec:vata} provides description of design of our solution.
 Implementation details take place in Section \ref{sec:impl} and finally experiments are evaluated in Section \ref{sec:exps}.
-\cite{autor:yes}
 
 \section{Preliminaries}
 \label{sec:analysis}
@@ -82,7 +82,7 @@ Each transition is a triple of the form $(q,a,q_1, \ldots, q_n)$ where $n \geq 0
 When $n = 0$ then such a transition is called a \emph{leaf rules}.
 A~\emph{bottom-up} automaton is a quadratuple $B=(Q, \Sigma, \delta, F)$, where $Q$, $F$ are same as for $top-down$ automaton, $F\subseteq Q$
 is a set of final states and $\delta$ is a transition relation with rules which are in the form $(q_1,\ldots, q_n,a,q)$ where $n \geq 0$ and $\#(a) = n$.
-We can interchange the two notations because non-deterministic automata are known to have same expressive power in bottom-up and top-down version. [cite somtheing]
+We can interchange the two notations because non-deterministic automata are known to have same expressive power in bottom-up and top-down version \cite{tata}.
 
 [TODO: maybe define semantics of TA]
 
@@ -97,7 +97,7 @@ how the tree automata is represented
 
 \section{VATA}
 \label{sec:vata}
-VATA is library for efficient manipulation with NTA [cite VATA].
+VATA is library for efficient manipulation with NTA \cite{libvata}.
 It provides both encoding for NTA -- semi-symbolic via MTBDD and explicit which will described further.
 VATA is open-source licensed under GPL license and it is written in C++.
 It currently supports TIMBUK as input format.
@@ -105,10 +105,9 @@ It currently supports TIMBUK as input format.
 The main goal of VATA is to provide state-of-the-art algorithms for inclusion checking
 but it also contains implementation of standard operations like union or intersection.
 As we mentioned in Section \ref{sec:intro} inclusion checking is related to simulation
-since simulation relation could bring more efficiency to the state-of-the-art algorithms like [cite antichians].
-There are already implemented algorithms for computing simulation in VATA but not one of them uses
-method which we used.
-The algorithms for simulation computing in VATA uses encoding to LTL systems [cite tacas08] in case of explicit encoding
+since simulation relation could bring more efficiency to the state-of-the-art algorithms like antichains \cite{tacas10}.
+There are already implemented algorithms for computing simulation in VATA but not one of them uses method which we used.
+The algorithms for simulation computing in VATA uses encoding to LTL systems \cite{tacas08} in case of explicit encoding
 and there are some implementations over MTBDD which are not known to work at all.
 
 \subsection{Explicit representation}
