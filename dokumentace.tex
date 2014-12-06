@@ -47,7 +47,7 @@ In case of tree automata it is possible to compute upward or downward simulation
 work we consider only downward simulation.
 As we mentioned earlier simulation brings reduction of states which we need explore performing
 certain algorithms over tree automata because it often holds that when state $p$ is simulated by $q$
-we don't to further explore state $p$.
+we don't further explore state $p$.
 Moreover, it is possible also to perform reduction of states of a NFA by computing
 equivalence classes on simulation relation and merging states in a same class.
 
@@ -93,7 +93,26 @@ and $(q,a,q_1,\ldots, q_n),a,q)$ then $\exists (p_1, \ldots, p_n) \rightarrow p 
 \section{BDD representation}
 \label{sec:bdd}
 
-how the tree automata is represented
+This section is based on~\cite{fiedor:wsks}. \textit{Reduced ordered binary decision diagram} (BDD) is directed acyclic graph with single \textit{source} node called \textit{root} and at least two \textit{sink} nodes 0 and 1. Nodes that are not sink nodes are called \textit{internal nodes}. ROBDD are defined over a set of $n$ Boolean variables $X = \{x_1, \dots, x_n\}$, we assume that $X$ can be ordered: $x_1 < x_2 < \dots < x_n$. Now for each internal node $v$, there exists two outgoing edges with label \textit{low} and \textit{high}. We further can define function \textit{var} which assign Boolean variables to the internal nodes of ROBDD. In ROBDDs there holds next condition: $var(v) < var(v.low) \wedge var(v) < var(v.high) \wedge v.low \neq v.high$, thus successor has always higher value. ROBDD nodes therefore represent $n$-ary Boolean functions that map each assignment to the Boolean variables in $X$.
+
+\textit{Mutli terminal binary decision diagram} (MTBDD) is then ROBDD generalized to more than two sink nodes. Further we can define \textit{shared} MTBDD, MTBDD with multiple source nodes/roots. You can see difference between ordinary BDD and MTBDD in Figure \ref{fig:15860}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{15860.pdf}
+	\caption{Comparison of ROBDD and MTBDD \cite{fiedor:wsks}}
+	\label{fig:15860}
+\end{figure}
+
+Let $A=(Q, \Sigma, \delta, R)$ be a tree automaton. We can encode symbols to binary sequence with some function $enc: \Sigma \rightarrow \{0, 1\}^n$, for some $n$. Each position $1\leq i \leq n$ is then assigned a Boolean variable from set $X = \{x_1, \dots, x_n\}$. We define $Q^\#$ as set of all tuples of states from $Q$ with up to the maximum arity that some symbol in $\Sigma$ has.
+
+Finally we can define \textit{top-down} representation of the transition function $\delta$ of the TA $A$ uses a shared MTBDD $\delta^{td}$ over $\Sigma$, where the set of roots $R=Q$ and the domain of labels of sink nodes is $2^{Q^\#}$. MTBDD $\delta^{td}$ then represents the function
+\begin{equation*}
+[[ \delta^{td}]]  : Q \rightarrow (\Sigma \rightarrow 2^{Q^\#}t)
+\end{equation*}
+\begin{equation*}
+[[ \delta^{td}]]   = \lambda q a . \{(q_1, \dots, q_p) | q \xrightarrow{a} (q_1, \dots, q_p) \} 
+\end{equation*}
 
 \section{VATA}
 \label{sec:vata}
@@ -250,5 +269,5 @@ for run, please read README-gal
 
 
 \bibliography{literatura}
-\bibliographystyle{czechiso}
+\bibliographystyle{plain}
 \end{document}
