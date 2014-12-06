@@ -116,6 +116,27 @@ Finally we can define \textit{top-down} representation of the transition functio
 [[ \delta^{td}]]   = \lambda q a . \{(q_1, \dots, q_p) | q \xrightarrow{a} (q_1, \dots, q_p) \} 
 \end{equation*}
 
+As an example we can take TA with following transitions:
+\begin{alignat*}{4}
+q_1 \xrightarrow{00\overline{X}} q_1, \qquad &
+q_1 \xrightarrow{011} q_1, \qquad & 
+q_1 \xrightarrow{110} q_1, \qquad &
+q_1 \xrightarrow{10\overline{X}} q_1, \qquad & \\
+q_1 \xrightarrow{010} q_1, \qquad &
+q_1 \xrightarrow{111} q_1, \qquad &
+q_1 \xrightarrow{\overline{X}\overline{X}\overline{X}} q_2 \qquad &  &\\
+\end{alignat*}
+
+Where symbol $\overline{X}$ denotes either 0 or 1. MTBDD encoding this transition is depicted at Figure~\ref{fig:MTBDD}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=4cm]{MTBDD}
+\caption{Example of MTBDD representing automaton transitions}
+\label{fig:MTBDD}
+\end{figure}
+
+
 \section{VATA}
 \label{sec:vata}
 VATA is library for efficient manipulation with NTA \cite{libvata}.
