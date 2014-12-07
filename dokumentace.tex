@@ -12,6 +12,7 @@
 \usepackage{comment}
 \usepackage[longend,ruled,vlined,commentsnumbered,linesnumbered]{algorithm2e}
 \usepackage{amsthm}
+\usepackage{subcaption}
 
 \newcommand{\myuv}[1]{\quotedblbase #1\textquotedblleft}
 \let\oldnl\nl% Store \nl in \oldnl
@@ -30,20 +31,20 @@
 \section{Introduction}
 \label{sec:intro}
 
-Non-deterministic finite tree automata (NTA) is formalism often used in the field of formal verification.
+\textit{Non-deterministic finite tree automata} (NTA) is formalism often used in the field of formal verification.
 For example, it can be used for shape analysis of programs manipulating complex data structure where
 state of heap is represented by a set of the tree automata \cite{methods12}.
-The mentioned technqiue is based on the framework of abstract interpretation where one of fundamentals
+The mentioned technqiue is based on the framework of abstract interpretation where one of fundamental
 operations is computing fixed point (mainly for the cycles in a program) what includes checking inclusion of
 tree automata languages.
-Checking inclusion is easy for deterministic tree automata (DTA) but much harder for NTA because
+Checking inclusion is easy for \textit{deterministic tree automata} (DTA) but much harder for NTA because
 na{\"i}ve algorithm has exponential complexity.
 It is not also possible to use DTA in these techniques because NTA can represent same language in much more
-conciser way and determinization could lead to exponential grow of the  number of the states.
+conciser way and determinization could lead to exponential growth of the  number of the states.
 However, there are efficient algorithms for checking language inclusion (based on antichains introduced in \cite{tacas10})
-with which it is possible to make more efficient by computing simulation relation over the states of checked automata \cite{tacas10}.
+with which it is possible to compute simulation relation over the states of checked automata \cite{tacas10}. %TODO tuto větu moc nechápu
 Simulation reduce state space which is needed to explore to check whether inclusion holds.
-On the other side, computation of simulation relation has itself $O(m^2*n^4)$ complexity so the time needed
+On the other side, computation of simulation relation has itself $O(m^2*n^4)$ complexity so the time needed %TODO nesprávná složitost
 to compute it is sometimes bigger than saved state space.
 This leads to need of trying the new methods for computing simulation which can be more efficient and
 reduce its complexity to level when it will be efficient enough to be used always for enhancing inclusion checking. 
@@ -54,19 +55,19 @@ work we consider only downward simulation.
 As we mentioned earlier simulation brings reduction of states which we need explore performing
 certain algorithms over tree automata because it often holds that when state $p$ is simulated by $q$
 we don't further explore state $p$.
-Moreover, it is possible also to perform reduction of states of a NFA by computing
+Moreover, it is possible also to perform reduction of states of a NTA by computing
 equivalence classes on simulation relation and merging states in a same class.
 
-Another technique dealing with complexity of NFA is their representation using mutli-terminal binary decision diagrams (MTBDD).
-The symbols of a NFA are encoded to binary representation so the transitions can represented by shared MTBDD what is very efficient mainly for NFA with large alphabeth
+Another technique dealing with complexity of NTA is their representation using \textit{mutli-terminal binary decision diagrams} (MTBDD).
+The symbols of a NTA are encoded to binary representation so the transitions can be represented by shared MTBDD what is very  efficient structure,  mainly for NTA with large alphabet
 (in the second possible representation -- symbols are represented explicitly for each transition).
-A~NFA could be represented in bottom-up way or top-down way by MTBDD, in this work we consider only top-down way.
+A~NTA could be represented in bottom-up way or top-down way by MTBDD, here we consider only top-down way.
 
 In this work we would like to combine straightforwardness of implementation of simulation over explicitly
-represented tree automata and conciser representation of automata by MTBDD.
-We suppose NTA represented by MTBDD and we will compute simulation by it conversion
-to explicit one with gradual reduction of number of the NFA symbols.
-We use computed simulation for more efficient inclusion computation and evaluate whether the method brings any advantage.
+represented tree automata and more concise representation of automata by MTBDD.
+We suppose NTA represented by MTBDD and we will compute simulation by conversion of MTBDD
+to explicit representation with gradual reduction of number of the NTA symbols.
+We use simulation for more efficient inclusion computation and evaluate whether the method brings any advantage.
 The implementation is realized as an extension of VATA library which is state-of-the-art library for NTA manipulation.
 
 In Section \ref{sec:analysis} we give formal definitions, in Section \ref{sec:bdd} MTBDD representation of automata is described.
@@ -101,7 +102,7 @@ and $(q,a,q_1,\ldots, q_n),a,q)$ then $\exists (p_1, \ldots, p_n) \rightarrow p 
 
 This section is based on~\cite{fiedor:wsks}. \textit{Reduced ordered binary decision diagram} (ROBDD) is directed acyclic graph with single \textit{source} node called \textit{root} and at least two \textit{sink} nodes 0 and 1. Nodes that are not sink nodes are called \textit{internal nodes}. ROBDD are defined over a set of $n$ Boolean variables $X = \{x_1, \dots, x_n\}$, we assume that $X$ can be ordered: $x_1 < x_2 < \dots < x_n$. Now for each internal node $v$, there exists two outgoing edges with label \textit{low} and \textit{high}. We further can define function \textit{var} which assign Boolean variables to the internal nodes of ROBDD. In ROBDDs there holds next condition: $var(v) < var(v.low) \wedge var(v) < var(v.high) \wedge v.low \neq v.high$, thus successor has always higher value. ROBDD nodes therefore represent $n$-ary Boolean functions that map each assignment to the Boolean variables in $X$.
 
-\textit{Mutli-terminal binary decision diagram} (MTBDD) is then ROBDD generalized to more than two sink nodes. Further we can define \textit{shared} MTBDD, MTBDD with multiple source nodes/roots. You can see difference between ordinary BDD and MTBDD in Figure \ref{fig:15860}.
+Mutli-terminal binary decision diagram (MTBDD) is then ROBDD generalized to more than two sink nodes. Further we can define \textit{shared} MTBDD, MTBDD with multiple source nodes/roots. You can see the difference between ordinary BDD and MTBDD in Figure \ref{fig:15860}.
 
 \begin{figure}[h]
 	\centering
@@ -136,7 +137,7 @@ Where symbol $\overline{X}$ denotes either 0 or 1. MTBDD encoding this transitio
 \begin{figure}[h]
 \centering
 \includegraphics[width=4cm]{MTBDD}
-\caption{Example of MTBDD representing automaton transitions}
+\caption{Example of MTBDD representing automaton transitions \cite{fiedor:wsks}}
 \label{fig:MTBDD}
 \end{figure}
 
@@ -145,20 +146,54 @@ Where symbol $\overline{X}$ denotes either 0 or 1. MTBDD encoding this transitio
 \label{sec:vata}
 VATA is library for efficient manipulation with NTA \cite{libvata}.
 It provides both encoding for NTA -- semi-symbolic via MTBDD and explicit which will be described further.
-VATA is open-source licensed under GPL license and it is written in C++.
-It currently supports TIMBUK as input format.
+VATA is open-source licensed under GPL license and it is written in C++. You can see internal library design in Figure~\ref{fig:lib_design}.
+It currently supports TIMBUK as input format. 
 
 The main goal of VATA is to provide state-of-the-art algorithms for inclusion checking
 but it also contains implementation of standard operations like union or intersection.
 As we mentioned in Section \ref{sec:intro} inclusion checking is related to simulation
 since simulation relation could bring more efficiency to the state-of-the-art algorithms like antichains \cite{tacas10}.
-There are already implemented algorithms for computing simulation in VATA but not one of them uses method which we used.
+There are already implemented algorithms for computing simulation in VATA but not a single one of them uses method which we used.
 The algorithms for simulation computing in VATA uses encoding to LTL systems \cite{tacas08} in case of explicit encoding
 and there are some implementations over MTBDD which are not known to work at all.
 
+\begin{figure}[h]
+	\centering
+	\input{figs/lib_design.tikz}
+	\caption{VATA library design}
+	\label{fig:lib_design}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\input{figs/explicit.tikz}
+	\caption{Explicit representation of automaton}
+	\label{fig:explicit}
+\end{figure}
+
+\begingroup
+\tikzset{every picture/.style={scale=1.3}}%
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}{.5\textwidth}
+		\centering
+		\input{figs/mtbdd_td.tikz}
+		\caption{MTBDD Top-down}
+		\label{fig:mtbdd_td}
+	\end{subfigure}%
+	~
+	\begin{subfigure}{.5\textwidth}
+	\centering
+	\input{figs/mtbdd_bu.tikz}
+	\caption{MTBDD Bottom-up}
+	\label{fig:mtbdd_bu}
+	\end{subfigure}%
+\end{figure}
+\endgroup
+
 \subsection{Explicit representation}
 
-The explicitly represented automaton is represented by its transition set using two hash maps.
+The explicitly represented automaton is represented by its transition set using two hash maps. Explicit representation is depicted in Figure~\ref{fig:explicit}.
 The first one maps each state $q$ to the second hash map which maps symbol $a$ set of tuples $(q_1,\ldots,q_n)$ for all $a(q_1, \ldots, q_n) \rightarrow q \in \delta$.
 The set of states is not stored explicitly because it is possible to obtain it from transition relation.
 However, a set of final states is represented like a standard set.
@@ -167,7 +202,7 @@ However, a set of final states is represented like a standard set.
 
 Semi-symbolic representation is based on representing transition relation using MTBDD.
 The particular details of encoding of a NTA to MTBDD is described in section \ref{sec:bdd}.
-The VATA library provides two possible MTBDD representation -- top-down and bottom-up.
+The VATA library provides two possible MTBDD representation -- top-down and bottom-up. These two types are depicted in Figures~\ref{fig:mtbdd_td} and \ref{fig:mtbdd_bu}. 
 The first one stores MTBDD for each $q \in Q$ and all transition where $q$ is on right-handed side
 are represented by the MTBDD.
 The MTBDD terminal symbols are sets of tuples which it is possible to make transition from $q$ to.
@@ -182,17 +217,17 @@ For implementation details please see Section \ref{sec:impl}.
 
 As the input of our method we take a NTA represented by MTBDD in top-down way
 which we translate into a NTA represented explicitly and we also reduce symbols.
-This is done by following general method doing reduction of alphabeth and yielding a new NTA.
-Let have a NFA $A=(Q, \Sigma, \delta, F)$, a new ranking alphabeth $\Sigma'$ and mapping $f: 2^\Sigma \rightarrow \Sigma'$,
+This is done by following general method doing reduction of alphabet and yielding a new NTA.
+Let have a NTA $A=(Q, \Sigma, \delta, F)$, a new ranking alphabet $\Sigma'$ and mapping $f: 2^\Sigma \rightarrow \Sigma'$,
 when there is $((a_1(q_1,\ldots,q_n) \rightarrow q) \in \delta \wedge \ldots \wedge (a_n(q_1,\ldots,q_n) \rightarrow q) \in \delta) \wedge
 ((a_1(r_1,\ldots,r_n) \rightarrow q) \in \delta \wedge \ldots \wedge (a_n(r_1,\ldots,r_n) \rightarrow q) \in \delta)$
 such that $a_i \neq a_{i+1}$ for any $i\in \{1..n\}$ then $(\{a_1, \ldots, a_n\}) \rightarrow A) \in f$.
-It is also constructed a new NFA $A' = (Q, \Sigma', \delta', F)$ where $Q, F$ are unchanged to $A$ 
-and $\Sigma'$ is the new ranked alphabeth obtained by mapping $f$ and $\delta'$ is transition rules set such that
+There is also constructed a new NTA $A' = (Q, \Sigma', \delta', F)$ where $Q, F$ are unchanged to $A$ 
+and $\Sigma'$ is the new ranked alphabeth obtained by mapping $f$ and $\delta'$ is a transition rules set such that
 $(a_1(q_1, \ldots, q_n) \rightarrow q) \in \delta \wedge \ldots \wedge (a_n(q_1, \ldots, q_n) \rightarrow q) \in \delta$ and
-$ \{a_1,\ldots,a_n\}  \rightarrow A~\in f$ for some $A \in \Sigma'$, then $A(q_1, \ldots, q_n) \rightarrow q) \in \delta$
+$ \{a_1,\ldots,a_n\}  \rightarrow A~\in f$ for some $A \in \Sigma'$, then $A((q_1, \ldots, q_n) \rightarrow q) \in \delta$
 for all possible tuples $q_1,\ldots,q_n$ [TODO which tuples].
-In our case, the input NFA is semi-symbolic represented one and the output NTA is the same automata in explicit representation.
+In our case, the input NTA is semi-symbolic represented one and the output NTA is the same automata in explicit representation.
 The change of NTA representation is done in level of implementation details and is not directly related to a design of generic algorithm.
 The whole method of translation is described again in Algortihm \ref{alg:translate} to provide more easy to follow way of method description.
 
@@ -279,12 +314,12 @@ Finally, we compute downward simulation over explicit NTA by Algorithm \ref{alg:
 \end{algorithm}
 
 \begin{theorem}
-Let have a NFA $A = (Q, \Sigma, \delta, F)$ and let $n = |Q|$, $m = |\delta|$.
+Let have a NTA $A = (Q, \Sigma, \delta, F)$ and let $n = |Q|$, $m = |\delta|$.
 Complexity of Algorithm \ref{alg:sim} is $O(m^2*n^4)$
 \end{theorem}
 
 \begin{proof}
-	The lines $1-2$ in main of Algorithm \ref{alg:sim} takes constant time $O(2)$.
+	The lines $1-2$ in main function of Algorithm \ref{alg:sim} takes constant time $O(1)$.
 	Cycle beginning at line $3$ will be repeated at most $n^2$ because $sim$ has size $n^2$ at the begging of the Algorithm
 	and each item could be removed at one iteration at the worst case.
 	The cycles at lines $5-7$ takes complexity $O(m)$ since we iterate over all arities over all symbols and over all transition
@@ -370,7 +405,7 @@ In next experiment we took automata with 110 - 170 states. You can see results o
 \section{Conclusion}
 \label{sec:end}
 
-This work describes implementation of a method for computing simulation over NFA and its implementation.
+This work describes implementation of a method for computing simulation over NTA and its implementation.
 Our method takes NTA represented in semi-symbolic top-down way using MTBDD, it
 turns it to explicit representation and compute downward simulation over it.
 
@@ -382,7 +417,7 @@ The method has been evaluated on set of NTA and it has shown that our method is 
 
 Further research may be done in more efficient manipulation with MTBDD during translation to explicit representation or
 extending it to bottom-up automata.
-It is also possible to implement NFA reduction which uses computed simulation.
+It is also possible to implement NTA reduction which uses computed simulation.
 
 \newpage
 \appendix
