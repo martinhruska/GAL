@@ -9,10 +9,13 @@
 \usepackage{amssymb}
 \usepackage{tikz}
 \usepackage{url}
+\usepackage{tikz}
 \usepackage{comment}
 \usepackage[longend,ruled,vlined,commentsnumbered,linesnumbered]{algorithm2e}
 \usepackage{amsthm}
 \usepackage{subcaption}
+
+\usetikzlibrary{decorations.pathmorphing}
 
 \newcommand{\myuv}[1]{\quotedblbase #1\textquotedblleft}
 \let\oldnl\nl% Store \nl in \oldnl
@@ -315,13 +318,10 @@ Finally, we compute downward simulation over explicit NTA by Algorithm \ref{alg:
 \end{algorithm}
 
 \begin{theorem}
-<<<<<<< HEAD
-Let have a NTA $A = (Q, \Sigma, \delta, F)$ and let $n = |Q|$, $m = |\delta|$.
-=======
 	\label{the:nfacompl}
 Let have a NFA $A = (Q, \Sigma, \delta, F)$ and $n = |Q|$, $m = |\delta|$ and let also ignore implementation
 complexity of the used data structures.
->>>>>>> adding the great algorithm
+
 Complexity of Algorithm \ref{alg:sim} is $O(m^2*n^4)$
 \end{theorem}
 
@@ -344,8 +344,7 @@ Complexity of Algorithm \ref{alg:sim} is $O(m^2*n^4)$
 	O(m^2*n^4)$
 \end{proof}
 
-<<<<<<< HEAD
-=======
+
 Theorem \ref{the:nfacompl} shows that complexity of Algorithm \ref{alg:sim} is very high what leads us
 to modify algortihm for simulation computation from [TODO cite ile].
 This algorithm is designed for nondeterministic finite automata so it was neccessary to modify it for NTA.
@@ -362,7 +361,6 @@ manipulation of the used data structures.
 We know that this could changed the complexity of the algorithms in practice but real implementation can significantly differ
 and we would like to show complexity related to the number of the states and size of transition relation in more abstract way.
 
->>>>>>> adding the great algorithm
 \section{Implementation}
 \label{sec:impl}
 
