@@ -35,24 +35,27 @@
 \label{sec:intro}
 
 
-Non-deterministic finite tree automata (NTA) is a formal model often used in the field of formal verification.
-For example, it can be used for shape analysis of the programs manipulating complex data structure where
+\textit{Non-deterministic finite tree automata} (NTA) is  often used in the field of formal verification.
+For example, it can be used for shape analysis of programs manipulating complex data structure where
 state of heap is represented by a set of the tree automata \cite{methods12}.
-The mentioned technqiue is based on the framework of abstract interpretation where one of the fundamental components
-is widening which is done to obtain fixpoint what includes checking inclusion of tree automata languages, i.e.
+The mentioned technqiue is based on the framework of abstract interpretation where one of fundamental
+components is widening which is done to obtain fixed point what includes checking inclusion of
+tree automata languages, i.e.
 checking whether language of one NTA is subset of language of the second NTA.
-Checking inclusion is easy for deterministic tree automata (DTA) but much harder for NTA because
-na{\"i}ve approach requires determinisation of NTA what could lead to exponential growth in the number of the states of NTA.
+Checking inclusion is easy for \textit{deterministic tree automata} (DTA) but much harder for NTA because
+na{\"i}ve algorithm requires determinisation of NTA what could lead to exponential growth in the number of the states of NTA.
 On the other side, NTA could be exponentially conciser compared to DTA what makes them more suitable for usage in the fields
 like formal verification where a state explosion often occured.
-However, there are efficient algorithms for checking language inclusion (based on the antichains \cite{tacas10}) of the NTA.
-The antichain based approach could be further imporoved by exploiting \emph{simulation relation} which furher reduce
+However, there are efficient algorithms for checking language inclusion (based on antichains introduced in \cite{tacas10})
+of the NTA. The antichain based approach could be further improved by exploiting \emph{simulation relation} which furher reduce
 the number of states of NTA needed to explore during inclusion checking \cite{tacas10}.
 On the other side, computation of simulation relation is very time demanding itself so the time spend by computing the relation
 is sometimes bigger than the time saved by reduction of the number of the visited states.
+
 This leads to need for the new efficient methods for computing simulation to make it fast enough to balance this pay off. 
 
 Simulation relation has been introduced as a general attribute of finite and infinite graphs \cite{focs95}.
+
 
 In case of tree automata it is possible to compute upward or downward simulation but in this
 work we consider only downward simulation.
