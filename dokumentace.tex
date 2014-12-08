@@ -487,34 +487,46 @@ This will run our code and will output simulation matrix. Simulation matrix $A$ 
 
 Automata for try-out are located in folder \texttt{automata/} or \texttt{tests/}.
 
-If you want to run explicit simulation use command
+For efficient simulation run command:
+\begin{verbatim}
+$ build/cli/vata -r bdd-td sim -t -o bdd=spec1 <AUTOMATON>
+\end{verbatim}
+
+If you want to run explicit simulation use command:
 \begin{verbatim}
 $ build/cli/vata -r expl sim <AUTOMATON>
 \end{verbatim}
 Output is same as with run with our simulation.
 
-You can compare these two results with python script
+You can compare results of two simulation with python script:
 \begin{verbatim}
 $ src/gal/compare_simulations.py <CORRECT_SIMULATION> <TEST_SIMULATION>
 \end{verbatim}
 
-To run inclusion with our simulation launch command
+To run inclusion with simulation launch command:
 \begin{verbatim}
 $ build/cli/vata -r bdd-td incl -t -o dir=down,rec=yes,sim=yes,bdd=spec <A1> <A2>
 \end{verbatim}
 
-If you want to run inclusion without our simulation run
+For efficient simulation run:
+\begin{verbatim}
+$ build/cli/vata -r bdd-td incl -t -o dir=down,rec=yes,sim=yes,bdd=spec1 <A1> <A2>
+\end{verbatim}
+
+
+If you want to run inclusion without our simulation run:
 \begin{verbatim}
 $ build/cli/vata -r bdd-td incl -t -o dir=down,rec=yes <A1> <A2>
 \end{verbatim}
 
-For convenience we wrote two scripts that run previous two commands with timeout
+For convenience we wrote scripts that run previous three commands with timeout:
 \begin{verbatim}
-$ src/gal/run_incl_nosim.sh <A1> <A2> 
 $ src/gal/run_incl_sim.sh <A1> <A2>
+$ src/gall/run_incl_sim1.sh <A1> <A2>
+$ src/gal/run_incl_nosim.sh <A1> <A2>
 \end{verbatim}
 
-Script which will tests all given automata for inclusion in product
+Script which will tests all given automata for inclusion in product:
 \begin{verbatim}
 $ src/gal/test_inclusion.py <A1> [ <A2> [...]]
 \end{verbatim}
