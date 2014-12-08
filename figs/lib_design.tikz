@@ -14,25 +14,25 @@
 \draw[dashed] (0,0) -- (-1.7,1.5);
 \draw[dashed] (3,1) -- (1.3,2.5);
 
-\draw (0,0.5) rectangle +(3, 0.5) [gen] node[midway] {\textit{Encoding}};
-\draw (0,0) rectangle +(1.3, 0.5) [gen] node[midway] {\textit{Core}};
-\draw (1.3,0) rectangle +(1.7, 0.5) [gen] node[midway] {\textit{Operations}};
+\draw (0,0.5) rectangle +(3, 0.5) [gen] node[midway] {\textit{\scriptsize{Encoding}}};
+\draw (0,0) rectangle +(1.3, 0.5) [gen] node[midway] {\textit{\scriptsize{Core}}};
+\draw (1.3,0) rectangle +(1.7, 0.5) [gen] node[midway] {\textit{\scriptsize{Operations}}};
 
-\draw (-5.1,2) rectangle +(3, 0.5) [expl] node[midway] {Explicit};
-\draw (-5.1,1.5) rectangle +(1.3, 0.5) [expl] node[midway] {Core};
-\draw (-3.8,1.5) rectangle +(1.7, 0.5) [expl] node[midway] {Operations};
+\draw (-5.1,2) rectangle +(3, 0.5) [expl] node[midway] {\scriptsize{Explicit}};
+\draw (-5.1,1.5) rectangle +(1.3, 0.5) [expl] node[midway] {\scriptsize{Core}};
+\draw (-3.8,1.5) rectangle +(1.7, 0.5) [expl] node[midway] {\scriptsize{Operations}};
 
-\draw (-1.7,2) rectangle +(3, 0.5) [bu] node[midway] {MTBDD Bottom-Up};
-\draw (-1.7,1.5) rectangle +(1.3, 0.5) [bu] node[midway] {Core};
-\draw (-0.4,1.5) rectangle +(1.7, 0.5) [bu] node[midway] {Operations};
+\draw (-1.7,2) rectangle +(3, 0.5) [bu] node[midway] {\scriptsize{MTBDD Bottom-Up}};
+\draw (-1.7,1.5) rectangle +(1.3, 0.5) [bu] node[midway] {\scriptsize{Core}};
+\draw (-0.4,1.5) rectangle +(1.7, 0.5) [bu] node[midway] {\scriptsize{Operations}};
 
-\draw (1.7,2) rectangle +(3, 0.5) [td] node[midway] {MTBDD Top-Down};
-\draw (1.7,1.5) rectangle +(1.3, 0.5) [td] node[midway] {Core};
-\draw (3.0,1.5) rectangle +(1.7, 0.5) [td] node[midway] {Operations};
+\draw (1.7,2) rectangle +(3, 0.5) [td] node[midway] {\scriptsize{MTBDD Top-Down}};
+\draw (1.7,1.5) rectangle +(1.3, 0.5) [td] node[midway] {\scriptsize{Core}};
+\draw (3.0,1.5) rectangle +(1.7, 0.5) [td] node[midway] {\scriptsize{Operations}};
 
-\draw (5.1,2) rectangle +(3, 0.5) [other] node[midway] {$<$other$>$};
-\draw (5.1,1.5) rectangle +(1.3, 0.5) [other] node[midway] {Core};
-\draw (6.4,1.5) rectangle +(1.7, 0.5) [other] node[midway] {Operations};
+\draw (5.1,2) rectangle +(3, 0.5) [other] node[midway] {\scriptsize{$<$other$>$}};
+\draw (5.1,1.5) rectangle +(1.3, 0.5) [other] node[midway] {\scriptsize{Core}};
+\draw (6.4,1.5) rectangle +(1.7, 0.5) [other] node[midway] {\scriptsize{Operations}};
 
 \draw[dashed] (3,0) -- (1.3,1.5);
 

@@ -86,25 +86,24 @@ nodes is the $i$-th successor of at most one node $v$ for some $i \in \mathbb{N}
 
 A~\emph{finite, non-deterministic, top-down tree automata} is a quadratuple $A=(Q, \Sigma, \delta, R)$ where
 $Q$ is a finite set of \emph{states}, $R\subseteq Q$ is a set of \emph{root states}, $\Sigma$ is a ranked alphabeth,
-$\delta$ is a set of the transition rules.
-Each transition is a triple of the form $(q,a,q_1, \ldots, q_n)$ where $n \geq 0$, $q, q_0 \ldots q_n \in Q$, $a \in \Sigma$ and $\#(a) = n$.
+$\delta$ is a set of the transitions.
+Each transition is a triple of the form $(q,a,(q_1, \ldots, q_n))$ where $n \geq 0$, $q, q_0 \ldots q_n \in Q$, $a \in \Sigma$ and $\#(a) = n$.
+We also denote $(q,a,(q_1, \ldots, q_n))$ as $a(q) \rightarrow (q_1, \ldots, q_n)$.
 When $n = 0$ then such a transition is called a \emph{leaf rules}.
-A~\emph{bottom-up} automaton is a quadratuple $B=(Q, \Sigma, \delta, F)$, where $Q$, $F$ are same as for $top-down$ automaton, $F\subseteq Q$
-is a set of final states and $\delta$ is a transition relation with rules which are in the form $(q_1,\ldots, q_n,a,q)$ where $n \geq 0$ and $\#(a) = n$.
-We can interchange the two notations because non-deterministic automata are known to have same expressive power in bottom-up and top-down version \cite{tata}.
-
-[TODO: maybe define semantics of TA]
-
+A~\emph{bottom-up} automaton is a quadratuple $B=(Q, \Sigma, \delta, F)$, where $Q$, $F$ are same as again set of states and set of final states, $F\subseteq Q$
+is a set of final states and $\delta$ is a set of transitions which have the form $(q_1,\ldots, q_n,a,q)$ where $n \geq 0$ and $\#(a) = n$.
+We also dennote $(q_1,\ldots, q_n,a,q)$ as $a(q_1, \ldots, q_n) \rightarrow q$.
+We can interchange these two notations for non-deterministic tree automata because they have same expressive power in bottom-up and top-down version \cite{tata}.
 
 For a bottom-up NTA $A=(Q, \Sigma, \delta, F)$, a \emph{downward simulation} $\preceq\, \subseteq Q\times Q$ is binary relation such that $q \preceq p$
-and $(q,a,q_1,\ldots, q_n),a,q)$ then $\exists (p_1, \ldots, p_n) \rightarrow p \wedge \forall i \in {1 \ldots n}: q_i \preceq p_i$.
+and $(a(q_1,\ldots, q_n) \rightarrow q) \in \delta$ then $\exists ((p_1, \ldots, p_n) \rightarrow p) \in \delta: \forall i \in {1 \ldots n}: q_i \preceq p_i$.
 
 \section{BDD representation}
 \label{sec:bdd}
 
 This section is based on~\cite{fiedor:wsks}. \textit{Reduced ordered binary decision diagram} (ROBDD) is directed acyclic graph with single \textit{source} node called \textit{root} and at least two \textit{sink} nodes 0 and 1. Nodes that are not sink nodes are called \textit{internal nodes}. ROBDD are defined over a set of $n$ Boolean variables $X = \{x_1, \dots, x_n\}$, we assume that $X$ can be ordered: $x_1 < x_2 < \dots < x_n$. Now for each internal node $v$, there exists two outgoing edges with label \textit{low} and \textit{high}. We further can define function \textit{var} which assign Boolean variables to the internal nodes of ROBDD. In ROBDDs there holds next condition: $var(v) < var(v.low) \wedge var(v) < var(v.high) \wedge v.low \neq v.high$, thus successor has always higher value. ROBDD nodes therefore represent $n$-ary Boolean functions that map each assignment to the Boolean variables in $X$.
 
-Mutli-terminal binary decision diagram (MTBDD) is then ROBDD generalized to more than two sink nodes. Further we can define \textit{shared} MTBDD, MTBDD with multiple source nodes/roots. You can see the difference between ordinary BDD and MTBDD in Figure \ref{fig:15860}.
+Mutli-terminal binary decision diagram (MTBDD) is then ROBDD generalized to more than two sink nodes. Further we can define \textit{shared} MTBDD, MTBDD with multiple source nodes/roots. You can see the difference between ordinary BDD and MTBDD in Figure \ref{fig:15860}. %TODO states in right side picture
 
 \begin{figure}[h]
 	\centering
@@ -123,7 +122,7 @@ Finally we can define \textit{top-down} representation of the transition functio
 [[ \delta^{td}]]   = \lambda q a . \{(q_1, \dots, q_p) | q \xrightarrow{a} (q_1, \dots, q_p) \} 
 \end{equation*}
 
-As an example we can take TA with following transitions:
+As an example we can take top-down TA with following transitions:
 \begin{alignat*}{4}
 q_1 \xrightarrow{00\overline{X}} q_1, \qquad &
 q_1 \xrightarrow{011} q_1, \qquad & 
@@ -147,29 +146,29 @@ Where symbol $\overline{X}$ denotes either 0 or 1. MTBDD encoding this transitio
 \section{VATA}
 \label{sec:vata}
 VATA is library for efficient manipulation with NTA \cite{libvata}.
-It provides both encoding for NTA -- semi-symbolic via MTBDD and explicit which will be described further.
+It provides both encodings of NTA -- semi-symbolic via MTBDD and explicit which will be described further.
 VATA is open-source licensed under GPL license and it is written in C++. You can see internal library design in Figure~\ref{fig:lib_design}.
 It currently supports TIMBUK as input format. 
 
 The main goal of VATA is to provide state-of-the-art algorithms for inclusion checking
-but it also contains implementation of standard operations like union or intersection.
+but it also contains implementation of standard operations like union or intersection of languages of NTA.
 As we mentioned in Section \ref{sec:intro} inclusion checking is related to simulation
 since simulation relation could bring more efficiency to the state-of-the-art algorithms like antichains \cite{tacas10}.
-There are already implemented algorithms for computing simulation in VATA but not a single one of them uses method which we used.
-The algorithms for simulation computing in VATA uses encoding to LTL systems \cite{tacas08} in case of explicit encoding
-and there are some implementations over MTBDD which are not known to work at all.
+There are already implemented algorithms for computing simulation in VATA.
+The algorithms for simulation computing in VATA uses computation over LTL systems from \cite{tacas08} for explicit encoding
+and there are also some na{\"i}ve implementations for bottom-up MTBDD.
 
 \begin{figure}[h]
 	\centering
 	\input{figs/lib_design.tikz}
-	\caption{VATA library design}
+	\caption{VATA library design. Image is taken from \cite{libvata}.}
 	\label{fig:lib_design}
 \end{figure}
 
 \begin{figure}[h]
 	\centering
 	\input{figs/explicit.tikz}
-	\caption{Explicit representation of automaton}
+	\caption{Explicit representation of automaton. Image is taken from \cite{libvata}.}
 	\label{fig:explicit}
 \end{figure}
 
@@ -180,14 +179,14 @@ and there are some implementations over MTBDD which are not known to work at all
 	\begin{subfigure}{.5\textwidth}
 		\centering
 		\input{figs/mtbdd_td.tikz}
-		\caption{MTBDD Top-down}
+		\caption{MTBDD Top-down. Image is taken from \cite{libvata}.}
 		\label{fig:mtbdd_td}
 	\end{subfigure}%
 	~
 	\begin{subfigure}{.5\textwidth}
 	\centering
 	\input{figs/mtbdd_bu.tikz}
-	\caption{MTBDD Bottom-up}
+	\caption{MTBDD Bottom-up. Image is taken from \cite{libvata}.}
 	\label{fig:mtbdd_bu}
 	\end{subfigure}%
 \end{figure}
@@ -195,8 +194,12 @@ and there are some implementations over MTBDD which are not known to work at all
 
 \subsection{Explicit representation}
 
-The explicitly represented automaton is represented by its transition set using two hash maps. Explicit representation is depicted in Figure~\ref{fig:explicit}.
-The first one maps each state $q$ to the second hash map which maps symbol $a$ set of tuples $(q_1,\ldots,q_n)$ for all $a(q_1, \ldots, q_n) \rightarrow q \in \delta$.
+Let consider transitions in form $a(q_1,\ldots,q_n) \rightarrow q$.
+The explicitly represented automata transition set is implemented using two hash maps.
+The first one, called \emph{Top-level Lookup Tables}, maps each state (e.g. $q$) to it \emph{Transition cluster}.
+Transition cluster then maps symbols (e.g. $a$) to \emph{sets of pointers to tuples}.
+Pointers to tuples finally reference to storage of the tuples (e.g. $a(q_1,\ldots,q_n) \rightarrow q$).
+Explicit representation is depicted in Figure~\ref{fig:explicit}.
 The set of states is not stored explicitly because it is possible to obtain it from transition relation.
 However, a set of final states is represented like a standard set.
 
@@ -205,11 +208,11 @@ However, a set of final states is represented like a standard set.
 Semi-symbolic representation is based on representing transition relation using MTBDD.
 The particular details of encoding of a NTA to MTBDD is described in section \ref{sec:bdd}.
 The VATA library provides two possible MTBDD representation -- top-down and bottom-up. These two types are depicted in Figures~\ref{fig:mtbdd_td} and \ref{fig:mtbdd_bu}. 
-The first one stores MTBDD for each $q \in Q$ and all transition where $q$ is on right-handed side
+The first one stores MTBDD for each $q \in Q$ of NTA $A=(Q,\Sigma, \delta, F)$ and all transition where $q$ is on right-handed side
 are represented by the MTBDD.
-The MTBDD terminal symbols are sets of tuples which it is possible to make transition from $q$ to.
-The bottom-up representation inversely, MTBDD exists for each tuple of the NTA and MTBBD represents all transitions with
-the tuple on left-handed side and the terminal symbols are sets of states which it is possible to make transition to.
+The MTBDD terminal symbols are sets of tuples which it is possible to make transition from $q$ to under a symbol from $\Sigma$.
+The bottom-up representation is inverse, MTBDD exists for each tuple of the NTA and it represents all transitions with
+the tuple on the left-handed side and the terminal symbols are sets of states which it is possible to make transition to from the tuple.
 
 \section{Design}
 \label{sec:design}
