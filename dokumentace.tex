@@ -448,6 +448,9 @@ In next experiment we took automata with 110 - 170 states. You can see results o
 	\label{fig:g_advanced}
 \end{figure}
 
+During performing of the test cases we found that currently implemented algorithm for computing simulation over explicitly represented NTA in VATA does not compute relation corresponding to the definition of simulation.
+However, relation computed by VATA is subset of the correct simulation so it does not change correctness of checking language inclusion or reduction of NTA when simulation is exploited.
+
 \section{Conclusion}
 \label{sec:end}
 
@@ -455,15 +458,16 @@ This work describes implementation of a method for computing simulation over NTA
 Our method takes NTA represented in semi-symbolic top-down way using MTBDD, it
 turns it to explicit representation and compute downward simulation over it.
 
-We implemented our method as module to VATA library exploiting its infrastructure for manpilationg NTA.
-%The method has been evaluated on set of NTA and it has shown that our method and found that it is very awsome.
-%It 100000x faster then inclusion checking without simulation
-The method has been evaluated on set of NTA and it has shown that our method is justifiable in some cases. It ran 100x faster in these cases. On the other hand for most cases it runs slower than method without simulation because computing simulation is expensive and useless for some cases.
-
+We implemented our method as module to VATA library using its infrastructure for manpilationg NTA.
+The method has been evaluated on set of NTA and it has shown that our method is justifiable in some cases.
+It ran 100x faster in these cases. On the other hand for most cases it runs slower than method without simulation because computing simulation is expensive and useless for some cases.
+We also design and implemented enhanced algorithm for computing simulation and evaluated with following results. TODO
+Another output of our work is that we found incorrectness of VATA algorithm for simulation computing.
 
 Further research may be done in more efficient manipulation with MTBDD during translation to explicit representation or
 extending it to bottom-up automata.
 It is also possible to implement NTA reduction which uses computed simulation.
+There is also room for further improvement of used algorithms and their efficient implementation.
 
 \newpage
 \appendix
