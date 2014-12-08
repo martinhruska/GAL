@@ -38,42 +38,41 @@
 For example, it can be used for shape analysis of the programs manipulating complex data structure where
 state of heap is represented by a set of the tree automata \cite{methods12}.
 The mentioned technqiue is based on the framework of abstract interpretation where one of the fundamental components
-is widening which is done to obtain fixpoint what includes checking inclusion of tree automata languages, i.e.
+is widening which is done to obtain fixpoint what in this case includes checking inclusion of tree automata languages, i.e.
 checking whether language of one NTA is subset of language of the second NTA.
 Checking inclusion is easy for deterministic tree automata (DTA) but much harder for NTA because
 na{\"i}ve approach requires determinisation of NTA what could lead to exponential growth in the number of the states of NTA.
 On the other side, NTA could be exponentially conciser compared to DTA what makes them more suitable for usage in the fields
-like formal verification where a state explosion often occured.
+like formal verification where a state explosion often occurs.
 However, there are efficient algorithms for checking language inclusion (based on the antichains \cite{tacas10}) of the NTA.
 The antichain based approach could be further imporoved by exploiting \emph{simulation relation} which furher reduce
 the number of states of NTA needed to explore during inclusion checking \cite{tacas10}.
-On the other side, computation of simulation relation is very time demanding itself so the time spend by computing the relation
+On the other side, computation of simulation relation is time consuming itself so the time spend by computing the relation
 is sometimes bigger than the time saved by reduction of the number of the visited states.
-This leads to need for the new efficient methods for computing simulation to make it fast enough to balance this pay off. 
+This leads to need for the new efficient methods for computing simulation to make it fast enough to balance this pay off.
+Another usage of simulation is reduction of states NTA which is done by computing equivalence classes on simulation relation and merging states in the same classes.
 
-Simulation relation has been introduced as a general attribute of finite and infinite graphs \cite{focs95}.
+Efficient algortihm for computing simulation relation has been introduced for finite and infinite graphs \cite{focs95} and
+later modified for finite automata in \cite{ilie:nfa} and finally computing simulation for tree automata has been introduced in \cite{tacas08}
+where is described computation of either \emph{downward} or \emph{upward} simulation.
+Both kinds of the simulations are in \cite{tacas08} computed over labeled transition system (LTS) which is obtained from a NTA.
 
-In case of tree automata it is possible to compute upward or downward simulation but in this
-work we consider only downward simulation.
-As we mentioned earlier simulation brings reduction of states which we need explore performing
-certain algorithms over tree automata because it often holds that when state $p$ is simulated by $q$
-we don't further explore state $p$.
-Moreover, it is possible also to perform reduction of states of a NTA by computing
-equivalence classes on simulation relation and merging states in a same class.
-
-Another technique dealing with complexity of NTA is their representation using \textit{mutli-terminal binary decision diagrams} (MTBDD).
-The symbols of a NTA are encoded to binary representation so the transitions can be represented by shared MTBDD what is very  efficient structure,  mainly for NTA with large alphabet
-(in the second possible representation -- symbols are represented explicitly for each transition).
+Mentioned techniques suppose that NTA is represented explicitly what means that their transition relation is not encoded to any special structure but
+is saved in e.g. hash tables.
+On the other there are techniques dealing with complexity of NTA just by usage of advanced data structures.
+One of them is representation of NTA using \textit{mutli-terminal binary decision diagrams} (MTBDD) which are mainly efficient structure for dealing with NTA with large alphabet.
+because the symbols of a NTA alphabeth are encoded to binary representation so the transitions can be represented by shared MTBDD in conciser way.
 A~NTA could be represented in bottom-up way or top-down way by MTBDD, here we consider only top-down way.
 
 In this work we would like to combine straightforwardness of implementation of simulation over explicitly
 represented tree automata and more concise representation of automata by MTBDD.
 We suppose NTA represented by MTBDD and we will compute simulation by conversion of MTBDD
-to explicit representation with gradual reduction of number of the NTA symbols.
-We use simulation for more efficient inclusion computation and evaluate whether the method brings any advantage.
-The implementation is realized as an extension of VATA library which is state-of-the-art library for NTA manipulation.
+to explicit representation with gradual reduction of number of the NTA symbols and also number of transitions.
+We use simulation for more efficient language inclusion checking and evaluate whether the method brings any advantage.
+The implementation is realized as an extension of VATA library which is state-of-the-art library for NTA manipulation
+and contains either implementation of advanced algorithms for inclusion checking and implementation of MTBDD representation of NTA.
 
-In Section \ref{sec:analysis} we give formal definitions, in Section \ref{sec:bdd} MTBDD representation of automata is described.
+The outline of this text is following, in Section \ref{sec:analysis} we give formal definitions, in Section \ref{sec:bdd} MTBDD representation of automata is described.
 Section \ref{sec:bdd} describes VATA library, Section \ref{sec:vata} provides description of design of our solution.
 Implementation details take place in Section \ref{sec:impl} and finally experiments are evaluated in Section \ref{sec:exps}.
 
