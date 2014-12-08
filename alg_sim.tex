@@ -7,17 +7,33 @@
 		\ForEach{$a\in \Sigma$} {
 			$\delta^r(q,a) = \{k \in Q\,|\, a(q_1,\ldots, q_i, \ldots, q_n) \rightarrow k \emph{ where } i \in \{1..n\}, q = q_i \}$\;
 			$card(q,a) = |\{a(q_1, \ldots, q_n) \rightarrow q \in \delta\}|$\;
+			\ForEach{$p \in Q$}
+			{
+				$pos(q,p,a) = \{i\in mathbb{N}_0 \,|\, \exists (a(q_1, \ldots, q_i, \ldots, q_n) \rightarrow p) \in \delta \emph{ where } i \in \{1..\}, q=q_i\}$
+			}
 		}
 	}
+	
 
 	initialize all $N(a)$s with $0$s\;
 	$sim := Q\times Q$\;
 	$C := \emptyset$\;
 
-	\ForEach{$p \in F$} {
-		\ForEach{$q \in Q \setminus F$} {
-			$sim = sim \setminus \{(p,q)\}$\;
-			$C = C \cup \{(p,q)\}$\;
+	\ForEach{$p \in Q$} {
+		\ForEach{$q \in Q$} {
+			\If{$p \in F \wedge q \notin F$}
+			{
+				$sim = sim \setminus \{(p,q)\}$\;
+				$C = C \cup \{(p,q)\}$\;
+				continue\;
+			}
+
+			\If{$\{ a \in \Sigma\,|\, (a(p_1,\ldots, p_n) \rightarrow p) \in \delta \} \not \subseteq 
+				\{ a \in \Sigma\,|\, (a(q_1,\ldots, q_n) \rightarrow q) \in \delta \}$}
+			{
+				$sim = sim \setminus \{(p,q)\}$\;
+				$C = C \cup \{(p,q)\}$\;
+			}
 		}
 	}
 	
@@ -28,8 +44,7 @@
 		{
 			\ForEach{$k \in \delta^r(q,a)$}
 			{
-				\If {$(a(q_1,\ldots, q_i, \ldots, q_n) \rightarrow k) \in \delta \wedge
-					(a(p_1, \ldots, p_i, \ldots, p_n) \rightarrow p') \in \delta, \emph{ where } i\in \{1..n\},\ q_i = q,\ p_i = p $}
+				\If {$\exists p' \in Q: pos(q,k,a) \cap pos(p,p',a) \neq \emptyset$}
 				{
 					$N_{kp}(a) = N_{kp}(a) + 1$\;
 				}
