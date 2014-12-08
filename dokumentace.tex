@@ -99,6 +99,8 @@ We can interchange these two notations for non-deterministic tree automata becau
 
 For a bottom-up NTA $A=(Q, \Sigma, \delta, F)$, a \emph{downward simulation} $\preceq\, \subseteq Q\times Q$ is binary relation such that $q \preceq p$
 and $(a(q_1,\ldots, q_n) \rightarrow q) \in \delta$ then $\exists ((p_1, \ldots, p_n) \rightarrow p) \in \delta: \forall i \in {1 \ldots n}: q_i \preceq p_i$.
+When simulation is used for reduction of NTA or checking language inclusion we also add condition that $p \not\preceq q$ when $p \in F \wedge q \notin F$
+to prevent merging final and non-final states what could would not be language preserving.
 
 \section{BDD representation}
 \label{sec:bdd}
@@ -367,18 +369,56 @@ Complexity of Algorithm \ref{alg:sim} is $O(m^2*n^4)$
 \end{proof}
 
 Theorem \ref{the:nfacompl} shows that complexity of Algorithm \ref{alg:sim} is very high what leads us
-to modify algortihm for simulation computation over NTA from \cite{ilie:nta}.
+to modify algortihm for simulation computation over NTA from \cite{ilie:nta} which has complexity $O(m*n)$.
 This algorithm is designed for nondeterministic finite automata so it was neccessary to modify it for NTA.
 We propose such a modification in Algorithm \ref{alg:sim1}.
 
-\begin{algorithm}[h]
+For explanation of the Algorithm \ref{alg:sim1} we could suppose that there are no two symbols in $\Sigma$ (with different arities).
+Algorithm \ref{alg:sim1} works as follows.
+Firstly, helping data structures are initialized (lines $1-6$).
+Counter checking whether there is possibility for state $q$ and it transition $a(q_1, \ldots, q_n) \rightarrow q$ 
+to find another transition $a(p_1, \ldots, p_n) \rightarrow p$ such that $q_i \preceq p_i$ for any $i \in \{1..n\}$ to show that $q \preceq p$.
+The last Initialization is the one of a queue structure $C$ which is empty and simulation relation $sim$ which maximal.
+
+Then first refiment of simulation relation is done at line $10-18$.
+All pairs of final and non-final states are removed from relation and added to queue for further processing.
+Then all pair of states $p,q \in Q$ are removed from $sim$ and added $C$ when $p$ is accessible by transition with a symbol $a \in \Sigma$
+and there is not transition going to $q$ over $a$ from a tuple.
+
+In the main loop beggining at line $19$ $sim$ is gradually refined.
+The pair of items $p,q$ (we know that that $p \not\preceq q$) is taken and removed from $C$.
+Then the algoritm iterates over all symbols and for each $k$ in $\delta^r(q,a)$ a counter for a symbol $a$ and states $k,p$
+is increased when there is a transition $a(q_1, \ldots, q_i, \ldots, q_n) \rightarrow k$ and $a(p_1, \ldots, p_i, \ldots, p_n) \rightarrow p'$
+such that $i\in \{1..n\}$, $q_i = q$ and $p_i = p$.
+This update of the counter means that there is another tuple $(q_1, \ldots,q_n)$ that cannot prove $k \preceq p'$
+accessible from tuple $(p_1, \ldots, p_n)$ containing $p$.
+
+When there is no another possibility how to simulate transition to state $k$ from a tuple with state $p$
+then for all $l \in \delta^r{p,a}$ (all states accessible from a tuple with $p$ over symbol $a$) are
+removed paris $(l,k)$ from $sim$ and added for further processing to $C$.
+
+
+\begin{algorithm}[H]
 	\include{alg_sim}
 	 \caption{Computing simulation on a NTA efficiently. Based on similiar algortihm for finite automata in \cite{ilie:nfa}.}
 \label{alg:sim1}
 \end{algorithm}
 
-The whole complexity of our method is $O(m^2)+O(m^2*n^4)$.
-As you mentiond we ignore complexity of manipulation of the used data structures.
+
+\begin{theorem}
+	Let NFA $A=(Q,\Sigma,\delta, F)$ and $n=|Q|, m=|\delta|$, Algorithm \ref{alg:sim1} has complexity 
+\end{theorem}
+\begin{proof}
+	The prepocessing at the lines $1-6$ could be done by one traversal over all transitions so it has complexity $O(m)$.
+	The initialization at lines $7-9$ is done in constant time.
+	The first refiment has comlexity $O(n^2)$.
+	The main cycle is unchanged to \ref{ilie:nfa} ($O(mn)$) but at line $23$ is done evaluation which have complexity $O(n)$ so it
+	has comlexity $O(m*n^2)$.
+	Therefore time complexity is $O(m) + O(n^2) + O(m*n^2) = O(m*n^2)$.
+\end{proof}
+
+The whole complexity of our method is $O(m^2)+O(m*n^2)$.
+As you probably noticed we ignore complexity of manipulation of the used data structures.
 We know that this could changed the complexity of the algorithms in practice but the proofs would be much more complex in that case
 and we would like to show complexity related to the number of the states and size of transition relation in more abstract way.
 
