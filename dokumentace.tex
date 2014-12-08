@@ -81,7 +81,9 @@ Implementation details take place in Section \ref{sec:impl} and finally experime
 In this section NTA and simulation over NTA states will be defined more formally.
 
 A~\emph{ranked alphabeth} is a finite set of symbols $\Sigma$ associated with a mapping $\#: \Sigma \rightarrow \mathbb{N}_0$
-that assigns ranks to symbols. A~\emph{tree} is a graph $t$ which is either empty or it has exactly one root and each of its
+that assigns ranks to symbols.
+Rank of symbol will be also called arity of symbol in following text.
+A~\emph{tree} is a graph $t$ which is either empty or it has exactly one root and each of its
 nodes is the $i$-th successor of at most one node $v$ for some $i \in \mathbb{N}_0$
 
 A~\emph{finite, non-deterministic, top-down tree automata} is a quadratuple $A=(Q, \Sigma, \delta, R)$ where
@@ -217,31 +219,33 @@ the tuple on the left-handed side and the terminal symbols are sets of states wh
 \section{Design}
 \label{sec:design}
 
-This section describes conceptual design of our method for computing simulation and related algorithms.
+This section describes conceptual design of our method for computing simulation.
 For implementation details please see Section \ref{sec:impl}.
 
 As the input of our method we take a NTA represented by MTBDD in top-down way
-which we translate into a NTA represented explicitly and we also reduce symbols.
-This is done by following general method doing reduction of alphabet and yielding a new NTA.
+which we translate into a NTA represented explicitly and we also reduce number of the symbols.
+Simulation relation is finally computed over the explicit NTA.
+The mentioned conversion is done by following general method for reduction of alphabet and yielding a new NTA.
 Let have a NTA $A=(Q, \Sigma, \delta, F)$, a new ranking alphabet $\Sigma'$ and mapping $f: 2^\Sigma \rightarrow \Sigma'$,
-when there is $((a_1(q_1,\ldots,q_n) \rightarrow q) \in \delta \wedge \ldots \wedge (a_n(q_1,\ldots,q_n) \rightarrow q) \in \delta) \wedge
+when there is $((a_1(q_1,\ldots,q_n) \rightarrow q) \in \delta \wedge \ldots \wedge (a_m(q_1,\ldots,q_n) \rightarrow q) \in \delta) \wedge
 ((a_1(r_1,\ldots,r_n) \rightarrow q) \in \delta \wedge \ldots \wedge (a_n(r_1,\ldots,r_n) \rightarrow q) \in \delta)$
-such that $a_i \neq a_{i+1}$ for any $i\in \{1..n\}$ then $(\{a_1, \ldots, a_n\}) \rightarrow A) \in f$.
+such that $a_i \neq a_{i+1}$ for any $i\in \{1..n\}$ then if $f(\{a_1,\ldots, a_n\} = \emptyset$ do $\Sigma' = \Sigma' \cup X$ such that $X \notin \Sigma'$
+and add $(\{a_1, \ldots, a_n\}) \rightarrow X)$ to $f$.
 There is also constructed a new NTA $A' = (Q, \Sigma', \delta', F)$ where $Q, F$ are unchanged to $A$ 
-and $\Sigma'$ is the new ranked alphabeth obtained by mapping $f$ and $\delta'$ is a transition rules set such that
-$(a_1(q_1, \ldots, q_n) \rightarrow q) \in \delta \wedge \ldots \wedge (a_n(q_1, \ldots, q_n) \rightarrow q) \in \delta$ and
-$ \{a_1,\ldots,a_n\}  \rightarrow A~\in f$ for some $A \in \Sigma'$, then $A((q_1, \ldots, q_n) \rightarrow q) \in \delta$
-for all possible tuples $q_1,\ldots,q_n$ [TODO which tuples].
-In our case, the input NTA is semi-symbolic represented one and the output NTA is the same automata in explicit representation.
-The change of NTA representation is done in level of implementation details and is not directly related to a design of generic algorithm.
-The whole method of translation is described again in Algortihm \ref{alg:translate} to provide more easy to follow way of method description.
+and $\Sigma'$ is the new ranked alphabeth obtained by mapping $f$ and $\delta'$ is transition set such that
+if $(a_1(q_1, \ldots, q_n) \rightarrow q) \in \delta \wedge \ldots \wedge (a_n(q_1, \ldots, q_n) \rightarrow q) \in \delta$ and
+$ (\{a_1,\ldots,a_n\}  \rightarrow X)~\in f$ for some $X \in \Sigma'$, then $(X(q_1, \ldots, q_n) \rightarrow q) \in \delta'$
+for all possible tuples $q_1,\ldots,q_n$.
+
+In our case, the input of the mentioned method NTA is semi-symbolic represented one and the output NTA is the same automata in explicit representation.
+The transformation of NTA representation is done in level of implementation details and it is not directly related to a design of generic algorithm.
+The whole method of translation is described algorithmcally in Algortihm \ref{alg:translate}.
 
 \begin{algorithm}[h]
-\label{alg:translate}
 \KwIn{NTA $A=(Q,\Sigma, \delta, F)$}
     \KwOut{NTA $A'=(Q,\Sigma', \delta', F)$}
     $\delta' := \emptyset $\;
-    $\Sigma' "= \emptyset $\;
+    $\Sigma' := \emptyset $\;
 	$f := \emptyset$\;
 	\ForEach{$q \in Q$}
     {
@@ -262,11 +266,29 @@ The whole method of translation is described again in Algortihm \ref{alg:transla
     }
 	\Return $A' = (Q, \Sigma', \delta', F)$
 \caption{NTA symbol reduction yielding a new NTA}
+\label{alg:translate}
 \end{algorithm}
 
-Finally, we compute downward simulation over explicit NTA by Algorithm \ref{alg:sim}.
+
+\begin{theorem}
+Let have a NFA $A = (Q, \Sigma, \delta, F)$ and $n = |Q|$, $m = |\delta|$ and let also ignore implementation
+complexity of the used data structures.
+Complexity of Algorithm \ref{alg:translate} is $O(m^2)$.
+\end{theorem}
+\begin{proof}
+Initialization at lines $1-3$ has constant complexity $O(3)$.
+The number of the iterations of the cycles at lines $4,5$ is at most $O(m)$ times because for each state $q\in Q$ (line 4) are
+visited all transitions where $q$ is at right-handed side.
+Complexity of operation at line $6$ is $O(1)$.
+Cycle at line $7$ is iterated at most $O(m)$ (when it go through all transitions).
+The line $8-12$ are $O(5)$ (here we ignore implementation details).
+Putting all together we have following complexity: $O(3) + O(m)*(O(u)+O(m)*O(v)) = O(m*u + m^2+v)$
+\end{proof}
+
+When explicitly represented automata is obtained it is possible to compute simulation using standard algorithm.
+First, we tried the algorithm described in \ref{lengal:trees} which is na{\"i}ve one and is described in Algorithm \ref{alg:sim}.
+
 \begin{algorithm}[h]
-\label{alg:sim}
 \KwIn{NTA $A=(Q,\Sigma, \delta, F)$}
 	\KwOut{$\preceq \subseteq Q \times Q$}
 	\SetKwFunction{main}{main}
@@ -316,23 +338,23 @@ Finally, we compute downward simulation over explicit NTA by Algorithm \ref{alg:
 		}
 	 }
 	 \caption{Computing simulation on a NTA. The algorithm is based on the one in \cite{lengal:trees}}
+\label{alg:sim}
 \end{algorithm}
 
 \begin{theorem}
 	\label{the:nfacompl}
 Let have a NTA $A = (Q, \Sigma, \delta, F)$ and let $n = |Q|$, $m = |\delta|$.
-
 Complexity of Algorithm \ref{alg:sim} is $O(m^2*n^4)$
 \end{theorem}
 
 \begin{proof}
 	The lines $1-2$ in main function of Algorithm \ref{alg:sim} takes constant time $O(1)$.
-	Cycle beginning at line $3$ will be repeated at most $n^2$ because $sim$ has size $n^2$ at the begging of the Algorithm
-	and each item could be removed at one iteration at the worst case.
-	The cycles at lines $5-7$ takes complexity $O(m)$ since we iterate over all arities over all symbols and over all transition
-	with a symbol of a arity it takes together that we iterate over all transitions.
+	Cycle beginning at line $3$ will be repeated at most $n^2$ because $sim$ is initialized with size $n^2$
+	and at the worst case it is possible that its items are removed gradually in iteration one by one.
+	The cycles at lines $5-7$ has complexity $O(m)$ since we iterate over all arities $n$ and over all symbols $a$ with arity $n$
+	and over all transitions symbol $a$ so we iterate over all transitions.
 	Line $8$ takes again constant time $O(1)$.
-	Cycle at line $9$ has complexity $O(m)$ because in the worst case all symbols there is only one symbol with one arity.
+	Cycle at line $9$ has complexity $O(m)$ because in the worst case there is only one symbol with one arity.
 	so this cycle will iterate over all transitions again.
 	Complexity of line $10$ is constant $O(1)$.
 	Function $simRefiment$ has complexity $O(n^2)$ because it could iterate over each element of $sim$ what could be $O(n^2)$.
@@ -345,19 +367,19 @@ Complexity of Algorithm \ref{alg:sim} is $O(m^2*n^4)$
 \end{proof}
 
 Theorem \ref{the:nfacompl} shows that complexity of Algorithm \ref{alg:sim} is very high what leads us
-to modify algortihm for simulation computation from [TODO cite ile].
+to modify algortihm for simulation computation over NTA from \cite{ilie:nta}.
 This algorithm is designed for nondeterministic finite automata so it was neccessary to modify it for NTA.
 We propose such a modification in Algorithm \ref{alg:sim1}.
 
 \begin{algorithm}[h]
-\label{alg:sim1}
 	\include{alg_sim}
 	 \caption{Computing simulation on a NTA efficiently. Based on similiar algortihm for finite automata in \cite{ilie:nfa}.}
+\label{alg:sim1}
 \end{algorithm}
 
-The whole complexity of our method is $O(m^2)+O(m^2*n^4)$. As you mentiond we ignore complexity of
-manipulation of the used data structures.
-We know that this could changed the complexity of the algorithms in practice but real implementation can significantly differ
+The whole complexity of our method is $O(m^2)+O(m^2*n^4)$.
+As you mentiond we ignore complexity of manipulation of the used data structures.
+We know that this could changed the complexity of the algorithms in practice but the proofs would be much more complex in that case
 and we would like to show complexity related to the number of the states and size of transition relation in more abstract way.
 
 \section{Implementation}
@@ -366,15 +388,16 @@ and we would like to show complexity related to the number of the states and siz
 As we mentioned in Section \ref{sec:vata} VATA library already has infrastructure needed for implementation of
 our method.
 It contains support for parsing input NTA, its semi-symbolic and explicit representation and implemented
-state-of-the-art algorithm for inclusion checking.
-So we decided to implement our solution as extension of VATA library.
-We design our implementation like a stand-alone module which is compiled separately to the rest of library (using CMake building system exploited in VATA).
-Module needs just include some headers for knowing interface of VATA classes for NTA representation.
+state-of-the-art algorithm for inclusion checking so we decided to implement our solution as extension of VATA library.
+We design our implementation like a stand-alone module which is compiled separately to the rest of library (using CMake building system).
+Our module needs just include some headers for knowing interface of VATA classes for NTA representation.
 
-When we focus on implementation of our module itself we use following classes:
+Being more specific, our module is consisted from the following classes related to design proposed in Section \ref{sec:design}
 \begin{itemize}
-	\item \emph{BDDTopDownSimExpl} Class translates MTBDD represented automaton to explicit one with symbol translation
-	\item \emph{BDDTopDownSimComputer} Class computes downward simulation over explicit tree automata
+	\item \emph{BDDTopDownSimExpl} Class translates MTBDD represented automaton to explicit one with symbol translation using Algorithm \ref{alg:transl}.
+	\item \emph{BDDTopDownSimComputer} Class computes downward simulation over explicit tree automata using Algorithm \ref{alg:sim}.
+	\item \emph{BDDTopDownSimEfficient} Class computes downward simulation over explicit tree automata using Algorithm \ref{alg:sim1}.
+	\item \emph{Supporting data types} Supporting data types and fuctions for previous classes are included in the following files \emph{data\_types.hh, sim\_efficient\_types.hh, sim\_efficient\_types\_functor.hh}
 \end{itemize}
 
 We exploited following classes from VATA implementation:
