@@ -41,7 +41,7 @@ The mentioned technique is based on the framework of abstract interpretation whe
 is widening which is done to obtain fixpoint what in this case includes checking inclusion of tree automata languages, i.e.
 checking whether language of one NTA is subset of language of the second NTA.
 Checking inclusion is easy for deterministic tree automata (DTA) but much harder for NTA because
-na{\"i}ve approach requires determinisation of NTA what could lead to exponential growth in the number of the states of NTA.
+na{\"i}ve approach requires determinization of NTA what could lead to exponential growth in the number of the states of NTA.
 On the other side, NTA could be exponentially conciser compared to DTA what makes them more suitable for usage in the fields
 like formal verification where a state explosion often occurs.
 However, there are efficient algorithms for checking language inclusion (based on the antichains \cite{tacas10}) of the NTA.
@@ -288,7 +288,7 @@ Putting all together we have following complexity: $O(3) + O(m)*(O(u)+O(m)*O(v))
 \end{proof}
 
 When explicitly represented automata is obtained it is possible to compute simulation using standard algorithm.
-First, we tried the algorithm described in \ref{lengal:trees} which is na{\"i}ve one and is described in Algorithm \ref{alg:sim}.
+First, we tried the algorithm described in \cite{lengal:trees} which is na{\"i}ve one and is described in Algorithm \ref{alg:sim}.
 
 \begin{algorithm}[h]
 \KwIn{NTA $A=(Q,\Sigma, \delta, F)$}
@@ -369,7 +369,7 @@ Complexity of Algorithm \ref{alg:sim} is $O(m^2*n^4)$
 \end{proof}
 
 Theorem \ref{the:nfacompl} shows that complexity of Algorithm \ref{alg:sim} is very high what leads us
-to modify algorithm for simulation computation over NTA from \cite{ilie:nta} which has complexity $O(m*n)$.
+to modify algorithm for simulation computation over NTA from \cite{ilie:nfa} which has complexity $O(m*n)$.
 This algorithm is designed for non-deterministic finite automata so it was necessary to modify it for NTA.
 We propose such a modification in Algorithm \ref{alg:sim1}.
 
@@ -434,7 +434,7 @@ Our module needs just include some headers for knowing interface of VATA classes
 
 Being more specific, our module is consisted from the following classes related to design proposed in Section \ref{sec:design}
 \begin{itemize}
-	\item \emph{BDDTopDownSimExpl} Class translates MTBDD represented automaton to explicit one with symbol translation using Algorithm \ref{alg:transl}.
+	\item \emph{BDDTopDownSimExpl} Class translates MTBDD represented automaton to explicit one with symbol translation using Algorithm \ref{alg:translate}.
 	\item \emph{BDDTopDownSimComputer} Class computes downward simulation over explicit tree automata using Algorithm \ref{alg:sim}.
 	\item \emph{BDDTopDownSimEfficient} Class computes downward simulation over explicit tree automata using Algorithm \ref{alg:sim1}.
 	\item \emph{Supporting data types} Supporting data types and functions for previous classes are included in the following files \emph{data\_types.hh, sim\_efficient\_types.hh, sim\_efficient\_types\_functor.hh}
@@ -495,14 +495,14 @@ However, relation computed by VATA is subset of the correct simulation so it doe
 \section{Conclusion}
 \label{sec:end}
 
-This work describes implementation of a method for computing simulation over NTA and its implementation.
+This work describes implementation of two  methods for computing simulation over NTA.
 Our method takes NTA represented in semi-symbolic top-down way using MTBDD, it
 turns it to explicit representation and compute downward simulation over it.
 
-We implemented our method as module to VATA library using its infrastructure for manipulation NTA.
-The method has been evaluated on set of NTA and it has shown that our method is justifiable in some cases.
+We implemented our methods as modules to VATA library using its infrastructure for manipulation NTA.
+The methods has been evaluated on set of NTA and it has shown that our method is justifiable in some cases.
 It ran 100x faster in these cases. On the other hand for most cases it runs slower than method without simulation because computing simulation is expensive and useless for some cases.
-We also design and implemented enhanced algorithm for computing simulation and evaluated with following results. TODO
+We also design and implemented enhanced algorithm for computing simulation and evaluated with following results. This efficient method designed and implemented by ourselves runs faster and is reliable in more cases than na{\"i}ve approach.
 Another output of our work is that we found incorrectness of VATA algorithm for simulation computing.
 
 Further research may be done in more efficient manipulation with MTBDD during translation to explicit representation or
@@ -526,7 +526,7 @@ $ build/cli/vata -r bdd-td -o bdd=spec sim <AUTOMATON>
 \end{verbatim}
 This will run our code and will output simulation matrix. Simulation matrix $A$ where row index and column index are states. If value $A_{i,j}$ equals 1 it means that $i$ can be simulated by $j$, if 0 it means that $i$ cannot be simulated by $j$.
 
-Automata for try-out are located in folder \texttt{automata/} or \texttt{tests/}.
+Automata for try-out are located in folder \texttt{tests/}.
 
 For efficient simulation run command:
 \begin{verbatim}
