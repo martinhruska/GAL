@@ -37,7 +37,7 @@
 \textit{Non-deterministic finite tree automata} (NTA) is a formal model often used in the field of formal verification.
 For example, it can be used for shape analysis of the programs manipulating complex data structure where
 state of heap is represented by a set of the tree automata \cite{methods12}.
-The mentioned technqiue is based on the framework of abstract interpretation where one of the fundamental components
+The mentioned technique is based on the framework of abstract interpretation where one of the fundamental components
 is widening which is done to obtain fixpoint what in this case includes checking inclusion of tree automata languages, i.e.
 checking whether language of one NTA is subset of language of the second NTA.
 Checking inclusion is easy for deterministic tree automata (DTA) but much harder for NTA because
@@ -45,14 +45,14 @@ na{\"i}ve approach requires determinisation of NTA what could lead to exponentia
 On the other side, NTA could be exponentially conciser compared to DTA what makes them more suitable for usage in the fields
 like formal verification where a state explosion often occurs.
 However, there are efficient algorithms for checking language inclusion (based on the antichains \cite{tacas10}) of the NTA.
-The antichain based approach could be further imporoved by exploiting \emph{simulation relation} which furher reduce
+The antichains based approach could be further improved by exploiting \emph{simulation relation} which further reduce
 the number of states of NTA needed to explore during inclusion checking \cite{tacas10}.
 On the other side, computation of simulation relation is time consuming itself so the time spend by computing the relation
 is sometimes bigger than the time saved by reduction of the number of the visited states.
 This leads to need for the new efficient methods for computing simulation to make it fast enough to balance this pay off.
 Another usage of simulation is reduction of states NTA which is done by computing equivalence classes on simulation relation and merging states in the same classes.
 
-Efficient algortihm for computing simulation relation has been introduced for finite and infinite graphs \cite{focs95} and
+Efficient algorithm for computing simulation relation has been introduced for finite and infinite graphs \cite{focs95} and
 later modified for finite automata in \cite{ilie:nfa} and finally computing simulation for tree automata has been introduced in \cite{tacas08}
 where is described computation of either \emph{downward} or \emph{upward} simulation.
 Both kinds of the simulations are in \cite{tacas08} computed over labeled transition system (LTS) which is obtained from a NTA.
@@ -60,8 +60,8 @@ Both kinds of the simulations are in \cite{tacas08} computed over labeled transi
 Mentioned techniques suppose that NTA is represented explicitly what means that their transition relation is not encoded to any special structure but
 is saved in e.g. hash tables.
 On the other there are techniques dealing with complexity of NTA just by usage of advanced data structures.
-One of them is representation of NTA using \textit{mutli-terminal binary decision diagrams} (MTBDD) which are mainly efficient structure for dealing with NTA with large alphabet.
-because the symbols of a NTA alphabeth are encoded to binary representation so the transitions can be represented by shared MTBDD in conciser way.
+One of them is representation of NTA using \textit{multi-terminal binary decision diagrams} (MTBDD) which are mainly efficient structure for dealing with NTA with large alphabet.
+because the symbols of a NTA alphabet are encoded to binary representation so the transitions can be represented by shared MTBDD in conciser way.
 A~NTA could be represented in bottom-up way or top-down way by MTBDD, here we consider only top-down way.
 
 In this work we would like to combine straightforwardness of implementation of simulation over explicitly
@@ -80,21 +80,21 @@ Implementation details take place in Section \ref{sec:impl} and finally experime
 \label{sec:analysis}
 In this section NTA and simulation over NTA states will be defined more formally.
 
-A~\emph{ranked alphabeth} is a finite set of symbols $\Sigma$ associated with a mapping $\#: \Sigma \rightarrow \mathbb{N}_0$
+A~\emph{ranked alphabet} is a finite set of symbols $\Sigma$ associated with a mapping $\#: \Sigma \rightarrow \mathbb{N}_0$
 that assigns ranks to symbols.
 Rank of symbol will be also called arity of symbol in following text.
 A~\emph{tree} is a graph $t$ which is either empty or it has exactly one root and each of its
 nodes is the $i$-th successor of at most one node $v$ for some $i \in \mathbb{N}_0$
 
-A~\emph{finite, non-deterministic, top-down tree automata} is a quadratuple $A=(Q, \Sigma, \delta, R)$ where
-$Q$ is a finite set of \emph{states}, $R\subseteq Q$ is a set of \emph{root states}, $\Sigma$ is a ranked alphabeth,
+A~\emph{finite, non-deterministic, top-down tree automata} is a quadruple $A=(Q, \Sigma, \delta, R)$ where
+$Q$ is a finite set of \emph{states}, $R\subseteq Q$ is a set of \emph{root states}, $\Sigma$ is a ranked alphabet,
 $\delta$ is a set of the transitions.
 Each transition is a triple of the form $(q,a,(q_1, \ldots, q_n))$ where $n \geq 0$, $q, q_0 \ldots q_n \in Q$, $a \in \Sigma$ and $\#(a) = n$.
 We also denote $(q,a,(q_1, \ldots, q_n))$ as $a(q) \rightarrow (q_1, \ldots, q_n)$.
 When $n = 0$ then such a transition is called a \emph{leaf rules}.
-A~\emph{bottom-up} automaton is a quadratuple $B=(Q, \Sigma, \delta, F)$, where $Q$, $F$ are same as again set of states and set of final states, $F\subseteq Q$
+A~\emph{bottom-up} automaton is a quadruple $B=(Q, \Sigma, \delta, F)$, where $Q$, $F$ are same as again set of states and set of final states, $F\subseteq Q$
 is a set of final states and $\delta$ is a set of transitions which have the form $(q_1,\ldots, q_n,a,q)$ where $n \geq 0$ and $\#(a) = n$.
-We also dennote $(q_1,\ldots, q_n,a,q)$ as $a(q_1, \ldots, q_n) \rightarrow q$.
+We also denote $(q_1,\ldots, q_n,a,q)$ as $a(q_1, \ldots, q_n) \rightarrow q$.
 We can interchange these two notations for non-deterministic tree automata because they have same expressive power in bottom-up and top-down version \cite{tata}.
 
 For a bottom-up NTA $A=(Q, \Sigma, \delta, F)$, a \emph{downward simulation} $\preceq\, \subseteq Q\times Q$ is binary relation such that $q \preceq p$
@@ -107,7 +107,7 @@ to prevent merging final and non-final states what could would not be language p
 
 This section is based on~\cite{fiedor:wsks}. \textit{Reduced ordered binary decision diagram} (ROBDD) is directed acyclic graph with single \textit{source} node called \textit{root} and at least two \textit{sink} nodes 0 and 1. Nodes that are not sink nodes are called \textit{internal nodes}. ROBDD are defined over a set of $n$ Boolean variables $X = \{x_1, \dots, x_n\}$, we assume that $X$ can be ordered: $x_1 < x_2 < \dots < x_n$. Now for each internal node $v$, there exists two outgoing edges with label \textit{low} and \textit{high}. We further can define function \textit{var} which assign Boolean variables to the internal nodes of ROBDD. In ROBDDs there holds next condition: $var(v) < var(v.low) \wedge var(v) < var(v.high) \wedge v.low \neq v.high$, thus successor has always higher value. ROBDD nodes therefore represent $n$-ary Boolean functions that map each assignment to the Boolean variables in $X$.
 
-Mutli-terminal binary decision diagram (MTBDD) is then ROBDD generalized to more than two sink nodes. Further we can define \textit{shared} MTBDD, MTBDD with multiple source nodes/roots. You can see the difference between ordinary BDD and MTBDD in Figure \ref{fig:15860}. %TODO states in right side picture
+Multi-terminal binary decision diagram (MTBDD) is then ROBDD generalized to more than two sink nodes. Further we can define \textit{shared} MTBDD, MTBDD with multiple source nodes/roots. You can see the difference between ordinary BDD and MTBDD in Figure \ref{fig:15860}. %TODO states in right side picture
 
 \begin{figure}[h]
 	\centering
@@ -234,14 +234,14 @@ when there is $((a_1(q_1,\ldots,q_n) \rightarrow q) \in \delta \wedge \ldots \we
 such that $a_i \neq a_{i+1}$ for any $i\in \{1..n\}$ then if $f(\{a_1,\ldots, a_n\} = \emptyset$ do $\Sigma' = \Sigma' \cup X$ such that $X \notin \Sigma'$
 and add $(\{a_1, \ldots, a_n\}) \rightarrow X)$ to $f$.
 There is also constructed a new NTA $A' = (Q, \Sigma', \delta', F)$ where $Q, F$ are unchanged to $A$ 
-and $\Sigma'$ is the new ranked alphabeth obtained by mapping $f$ and $\delta'$ is transition set such that
+and $\Sigma'$ is the new ranked alphabet obtained by mapping $f$ and $\delta'$ is transition set such that
 if $(a_1(q_1, \ldots, q_n) \rightarrow q) \in \delta \wedge \ldots \wedge (a_n(q_1, \ldots, q_n) \rightarrow q) \in \delta$ and
 $ (\{a_1,\ldots,a_n\}  \rightarrow X)~\in f$ for some $X \in \Sigma'$, then $(X(q_1, \ldots, q_n) \rightarrow q) \in \delta'$
 for all possible tuples $q_1,\ldots,q_n$.
 
 In our case, the input of the mentioned method NTA is semi-symbolic represented one and the output NTA is the same automata in explicit representation.
 The transformation of NTA representation is done in level of implementation details and it is not directly related to a design of generic algorithm.
-The whole method of translation is described algorithmcally in Algortihm \ref{alg:translate}.
+The whole method of translation is described algorithmically in Algorithm \ref{alg:translate}.
 
 \begin{algorithm}[h]
 \KwIn{NTA $A=(Q,\Sigma, \delta, F)$}
@@ -273,7 +273,7 @@ The whole method of translation is described algorithmcally in Algortihm \ref{al
 
 
 \begin{theorem}
-Let have a NFA $A = (Q, \Sigma, \delta, F)$ and $n = |Q|$, $m = |\delta|$ and let also ignore implementation
+Let have a NTA $A = (Q, \Sigma, \delta, F)$ and $n = |Q|$, $m = |\delta|$ and let also ignore implementation
 complexity of the used data structures.
 Complexity of Algorithm \ref{alg:translate} is $O(m^2)$.
 \end{theorem}
@@ -369,51 +369,51 @@ Complexity of Algorithm \ref{alg:sim} is $O(m^2*n^4)$
 \end{proof}
 
 Theorem \ref{the:nfacompl} shows that complexity of Algorithm \ref{alg:sim} is very high what leads us
-to modify algortihm for simulation computation over NTA from \cite{ilie:nta} which has complexity $O(m*n)$.
-This algorithm is designed for nondeterministic finite automata so it was neccessary to modify it for NTA.
+to modify algorithm for simulation computation over NTA from \cite{ilie:nta} which has complexity $O(m*n)$.
+This algorithm is designed for non-deterministic finite automata so it was necessary to modify it for NTA.
 We propose such a modification in Algorithm \ref{alg:sim1}.
 
-For explanation of the Algorithm \ref{alg:sim1} we could suppose that there are no two symbols in $\Sigma$ (with different arities).
+We could suppose without loss of gene of the Algorithm \ref{alg:sim1} that there are no two same symbols in $\Sigma$.
 Algorithm \ref{alg:sim1} works as follows.
-Firstly, helping data structures are initialized (lines $1-6$).
+Firstly, supporting data structures are initialized at lines $1-6$, then counters are initialized to $0$ at line $7$.
 Counter checking whether there is possibility for state $q$ and it transition $a(q_1, \ldots, q_n) \rightarrow q$ 
 to find another transition $a(p_1, \ldots, p_n) \rightarrow p$ such that $q_i \preceq p_i$ for any $i \in \{1..n\}$ to show that $q \preceq p$.
-The last Initialization is the one of a queue structure $C$ which is empty and simulation relation $sim$ which maximal.
+The last initialization is the one of a queue structure $C$ which is empty created as empty and simulation relation $sim$ which maximal, i.e. that each
+state simulates all other states.
 
-Then first refiment of simulation relation is done at line $10-18$.
+Then the first refinement of simulation relation is done at line $10-18$.
 All pairs of final and non-final states are removed from relation and added to queue for further processing.
-Then all pair of states $p,q \in Q$ are removed from $sim$ and added $C$ when $p$ is accessible by transition with a symbol $a \in \Sigma$
-and there is not transition going to $q$ over $a$ from a tuple.
+Then all pair of states $p,q \in Q$ are removed from $sim$ and added to $C$ when $p$ is accessible by transition with a symbol $a \in \Sigma$
+and there is not transition going to $q$ over $a$ from any tuple.
 
-In the main loop beggining at line $19$ $sim$ is gradually refined.
+$sim$ is gradually refined in the main loop beginning at line $19$.
 The pair of items $p,q$ (we know that that $p \not\preceq q$) is taken and removed from $C$.
-Then the algoritm iterates over all symbols and for each $k$ in $\delta^r(q,a)$ a counter for a symbol $a$ and states $k,p$
+Then the algorithm iterates over all symbols and for each $k$ in $\delta^r(q,a)$ a counter $C(a)_{kp}$
 is increased when there is a transition $a(q_1, \ldots, q_i, \ldots, q_n) \rightarrow k$ and $a(p_1, \ldots, p_i, \ldots, p_n) \rightarrow p'$
 such that $i\in \{1..n\}$, $q_i = q$ and $p_i = p$.
 This update of the counter means that there is another tuple $(q_1, \ldots,q_n)$ that cannot prove $k \preceq p'$
-accessible from tuple $(p_1, \ldots, p_n)$ containing $p$.
-
-When there is no another possibility how to simulate transition to state $k$ from a tuple with state $p$
-then for all $l \in \delta^r{p,a}$ (all states accessible from a tuple with $p$ over symbol $a$) are
-removed paris $(l,k)$ from $sim$ and added for further processing to $C$.
+for any $p'$ accessible from tuple $(p_1, \ldots, p_n)$ containing $p$.
+When there is no another possibility how to simulate transition to state $k$ from a tuple within state $q$
+then all pairs $(l,k)$ such that $l \in \delta^r(p,a)$ (all states accessible from a tuple within $p$ over symbol $a$) are
+removed from $sim$ and added for further processing to $C$.
 
 
 \begin{algorithm}[H]
 	\include{alg_sim}
-	 \caption{Computing simulation on a NTA efficiently. Based on similiar algortihm for finite automata in \cite{ilie:nfa}.}
+	 \caption{Computing simulation on a NTA efficiently. Based on similar algorithm for finite automata in \cite{ilie:nfa}.}
 \label{alg:sim1}
 \end{algorithm}
 
 
 \begin{theorem}
-	Let NFA $A=(Q,\Sigma,\delta, F)$ and $n=|Q|, m=|\delta|$, Algorithm \ref{alg:sim1} has complexity 
+	Let NTA $A=(Q,\Sigma,\delta, F)$ and $n=|Q|, m=|\delta|$, Algorithm \ref{alg:sim1} has complexity $O(m*n^2)$.
 \end{theorem}
 \begin{proof}
-	The prepocessing at the lines $1-6$ could be done by one traversal over all transitions so it has complexity $O(m)$.
+	The preprocessing at the lines $1-6$ could be done by one traversal over all transitions so it has complexity $O(m)$.
 	The initialization at lines $7-9$ is done in constant time.
-	The first refiment has comlexity $O(n^2)$.
-	The main cycle is unchanged to \ref{ilie:nfa} ($O(mn)$) but at line $23$ is done evaluation which have complexity $O(n)$ so it
-	has comlexity $O(m*n^2)$.
+	The first refinement has complexity $O(n^2)$.
+	The main cycle is unchanged to \cite{ilie:nfa} (where has $O(mn)$) but there is additional condition at line $23$ which have complexity $O(n)$ so
+	the whole cycle has complexity $O(m*n^2)$.
 	Therefore time complexity is $O(m) + O(n^2) + O(m*n^2) = O(m*n^2)$.
 \end{proof}
 
@@ -437,7 +437,7 @@ Being more specific, our module is consisted from the following classes related 
 	\item \emph{BDDTopDownSimExpl} Class translates MTBDD represented automaton to explicit one with symbol translation using Algorithm \ref{alg:transl}.
 	\item \emph{BDDTopDownSimComputer} Class computes downward simulation over explicit tree automata using Algorithm \ref{alg:sim}.
 	\item \emph{BDDTopDownSimEfficient} Class computes downward simulation over explicit tree automata using Algorithm \ref{alg:sim1}.
-	\item \emph{Supporting data types} Supporting data types and fuctions for previous classes are included in the following files \emph{data\_types.hh, sim\_efficient\_types.hh, sim\_efficient\_types\_functor.hh}
+	\item \emph{Supporting data types} Supporting data types and functions for previous classes are included in the following files \emph{data\_types.hh, sim\_efficient\_types.hh, sim\_efficient\_types\_functor.hh}
 \end{itemize}
 
 We exploited following classes from VATA implementation:
@@ -478,7 +478,7 @@ All experiments were ran on computer with OS Fedora 20 with CPU Intel Core i5-25
 	\label{fig:g2}
 \end{figure}
 
-You can see that variant without simulation runs faster for most of the runs. It is because simulation is demanding per se and only prolong computation time of easily computed inclusions. Easily computed inclusions are those where we can refute inclusion right from start. On the other hand for more complicated automata we have to stop run of nosim because it takes too long\footnote{Inclusion of automata with ~50 states without simulation run for ~4 minutes and this is getting worse with increasing number of states.}, but simulations implemented by us still run in reasonable time. Na{\"i}ve simulation also exceedes timeout several time but efficient simulation is undoubtedly better for this sort of automata.
+You can see that variant without simulation runs faster for most of the runs. It is because simulation is demanding per se and only prolong computation time of easily computed inclusions. Easily computed inclusions are those where we can refute inclusion right from start. On the other hand for more complicated automata we have to stop run of nosim because it takes too long\footnote{Inclusion of automata with ~50 states without simulation run for ~4 minutes and this is getting worse with increasing number of states.}, but simulations implemented by us still run in reasonable time. Na{\"i}ve simulation also exceeds timeout several time but efficient simulation is undoubtedly better for this sort of automata.
 
 In last experiment we took automata with 80 - 170 states. You can see results of this experiment in Figure \ref{fig:g_advanced}. Again you can see that for more than half of cases computation without simulation is faster, but for second half our methods  prevail. It still computes its results in 1 second with efficient simulation, under 10 second seconds for na{\"i}ve simulation, while nosim run is cut off after 60 seconds. We were unable to check time of computation without simulation in these automata because it ran too long. Also you can see here that efficient simulation started to reach timeout, but it still happens not as often (11) as other simulation (49 times) or without simulation (77).
 
@@ -499,7 +499,7 @@ This work describes implementation of a method for computing simulation over NTA
 Our method takes NTA represented in semi-symbolic top-down way using MTBDD, it
 turns it to explicit representation and compute downward simulation over it.
 
-We implemented our method as module to VATA library using its infrastructure for manpilationg NTA.
+We implemented our method as module to VATA library using its infrastructure for manipulation NTA.
 The method has been evaluated on set of NTA and it has shown that our method is justifiable in some cases.
 It ran 100x faster in these cases. On the other hand for most cases it runs slower than method without simulation because computing simulation is expensive and useless for some cases.
 We also design and implemented enhanced algorithm for computing simulation and evaluated with following results. TODO
